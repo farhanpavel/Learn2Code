@@ -53,7 +53,7 @@ export default function Sidebar() {
       <nav
         onMouseEnter={() => setIsSidebarOpen(true)}
         onMouseLeave={() => setIsSidebarOpen(false)}
-        className={`sticky top-0 h-screen bg-gradient-to-b from-gray-200 via-green-200 to-[#82ccda] pt-4 transition-all duration-300 rounded-l-lg text-black ${
+        className={`sticky top-0 h-screen bg-gradient-to-b from-gray-200 via-green-200 to-[#38646e] pt-4 transition-all duration-300 rounded-l-lg text-black ${
           isSidebarOpen ? "w-64" : "w-16"
         }`}
       >
