@@ -63,7 +63,7 @@ export default function Contact() {
             <div className="text-center ">
               <button
                 type="submit"
-                className="py-3 px-5 text-sm font-medium text-center text-white border-white border-[1px] rounded-full bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-black dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                className="py-3 px-5 text-sm font-medium text-center text-white border-white border-[2px] rounded-full bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-black dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
                 Submit
               </button>
