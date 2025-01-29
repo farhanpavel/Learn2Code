@@ -11,21 +11,19 @@ import {
 
 import { MoreHorizontal } from "lucide-react";
 
-export type Flight = {
-  flightNumber: string;
-  airline: string;
-  origin: string;
-  destination: string;
-  _id: string;
+export type Book = {
+  pdfUrl: string;
+  Booktype: string;
+  Booktopic: string;
+  date: string;
 };
-
-export const ActionsCell: React.FC<{ user: Flight }> = ({ user }) => {
+export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
   const router = useRouter();
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="  p-1 hover:bg-purple-200 outline-none rounded-full hover:transition-all hover:delay-100">
+          <button className="  p-1 hover:bg-green-200 outline-none rounded-full hover:transition-all hover:delay-100">
             <MoreHorizontal className="h-3 w-3" />
           </button>
         </DropdownMenuTrigger>
@@ -38,7 +36,7 @@ export const ActionsCell: React.FC<{ user: Flight }> = ({ user }) => {
             onClick={() => {
               router.push("/flightdashboard/entry/schedule/details");
             }}
-            className="hover:bg-purple-200 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
+            className="hover:bg-green-200 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
           >
             Take Quiz
           </DropdownMenuItem>

@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { url } from "@/components/Url/page";
 import { MdViewComfy } from "react-icons/md";
 import {
   ColumnDef,
@@ -20,6 +21,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Table,
   TableHead,
   TableHeader,
@@ -29,7 +39,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Flight, columns } from "./_datatable/action";
+import { Book, columns } from "./_datatable/action";
 import {
   Select,
   SelectContent,
@@ -42,25 +52,64 @@ import {
 import { Input } from "@/components/ui/input";
 import { MdOutlineUploadFile } from "react-icons/md";
 import { PiUploadSimpleBold } from "react-icons/pi";
+import { Label } from "@/components/ui/label";
 export default function Page() {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [users, setUsers] = useState<Flight[]>([]);
-  const [filter, setFilter] = useState<string>("");
-  const [searchValue, setSearchValue] = useState("");
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const response = await fetch(``);
-  //     const json = await response.json();
-  //     console.log(json.data.data);
-  //     if (response.ok) {
-  //       setUsers(json.data.data);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+  const [book, setBook] = useState({
+    Booktype: "PDF",
+    Booktopic: "",
+  });
+  const [dataAll, setData] = useState<Book[]>([]);
+  const [file, setFile] = useState<File | null>(null);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBook({ ...book, [e.target.name]: e.target.value });
+  };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!file) {
+      alert("Please select a file before uploading.");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("pdfFile", file);
+      formData.append("Booktype", book.Booktype);
+      formData.append("Booktopic", book.Booktopic);
+
+      const response = await fetch(`${url}/api/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        alert("Server Error");
+        throw new Error("Failed to upload file");
+      } else {
+        alert("Upload successful!");
+      }
+    } catch (err) {
+      console.error("Upload error", err);
+    }
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(`${url}/api/pdfs`);
+      const json = await response.json();
+      if (response.ok) {
+        setData(json);
+      }
+    };
+    fetchData();
+  }, []);
 
   const table = useReactTable({
-    data: [],
+    data: dataAll,
     columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -84,36 +133,85 @@ export default function Page() {
         </p>
         <div className="flex justify-between">
           <div>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-green-800  text-white rounded-lg mt-2"
-            >
-              <div className="flex items-center gap-x-1">
-                <PiUploadSimpleBold className="text-white text-sm" />
-                <p className="text-semibold text-sm font-bold"> Upload</p>
-              </div>
-            </button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="px-6 py-2 bg-green-800 text-white rounded-lg mt-2 flex items-center gap-x-1">
+                  <PiUploadSimpleBold className="text-white text-sm" />
+                  <p className="text-semibold text-sm font-bold"> Upload</p>
+                </button>
+              </DialogTrigger>
+
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Upload File</DialogTitle>
+                  <DialogDescription>
+                    Select a file to upload. Click "Upload" when ready.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="topic" className="text-right">
+                      Topic
+                    </Label>
+                    <Input
+                      id="topic"
+                      name="Booktopic"
+                      type="text"
+                      className="col-span-3"
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="file" className="text-right">
+                      File
+                    </Label>
+                    <Input
+                      id="file"
+                      type="file"
+                      accept="application/pdf"
+                      className="col-span-3"
+                      name="pdfFile"
+                      onChange={handleFileChange}
+                      required
+                    />
+                  </div>
+
+                  <DialogFooter>
+                    <button
+                      type="submit"
+                      className="px-6 py-2 bg-green-800 text-white rounded-lg mt-2 flex items-center gap-x-1"
+                    >
+                      <p className="text-semibold text-sm font-bold"> Upload</p>
+                    </button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
-          <div className="flex space-x-4 items-center mt-2">
-            <Input
-              placeholder="Search by name"
-              value={(table.getColumn("")?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn("")?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm h-[71%] text-xs"
-            />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="ml-auto  h-[71%] flex items-center gap-x-2 bg-[#F2F4F4] border-[1px] border-green-700"
-                >
-                  <MdViewComfy className="flex items-center" /> View
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {/* {table
+          <div>
+            <div className="flex space-x-4 items-center mt-2">
+              <Input
+                placeholder="Search by name"
+                value={(table.getColumn("")?.getFilterValue() as string) ?? ""}
+                onChange={(event) =>
+                  table.getColumn("")?.setFilterValue(event.target.value)
+                }
+                className="max-w-sm h-[71%] text-xs"
+              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="ml-auto  h-[71%] flex items-center gap-x-2 bg-[#F2F4F4] border-[1px] border-green-700"
+                  >
+                    <MdViewComfy className="flex items-center" /> View
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {/* {table
                   .getAllColumns()
                   .filter((column) => column.getCanHide())
                   // .map((column) => {
@@ -130,8 +228,9 @@ export default function Page() {
                   //     </DropdownMenuCheckboxItem>
                   //   );
                   })} */}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
         <div className="space-y-4  p-3">
