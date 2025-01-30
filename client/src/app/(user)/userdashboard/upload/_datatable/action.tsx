@@ -5,7 +5,8 @@ import { ArrowUpDown } from "lucide-react";
 import { FaFile } from "react-icons/fa";
 import { ColumnDef } from "@tanstack/react-table";
 import { ActionsCell } from "./data";
-
+import { url } from "@/components/Url/page";
+import LoadingSpinner from "@/components/Loader/page";
 export type Book = {
   pdfUrl: string;
   Booktype: string;
@@ -17,7 +18,6 @@ export type Book = {
 export const columns: ColumnDef<Book>[] = [
   {
     accessorKey: "name",
-
     header: ({ column }) => (
       <button
         className="hover:bg-green-200 flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
@@ -29,13 +29,37 @@ export const columns: ColumnDef<Book>[] = [
     ),
     cell: ({ row }) => {
       const router = useRouter();
+      const [loading, setLoading] = useState(false); // Add loading state
 
-      const handleClick = () => {
-        // Set a cookie when the name is clicked
+      const handleClick = async () => {
+        setLoading(true); // Start loading
         Cookies.set("Id", row.original._id);
 
-        // Redirect to the desired page
-        router.push("upload/read");
+        try {
+          const requestData = {
+            pdfUrl: row.original.pdfUrl,
+          };
+
+          const response = await fetch(`${url}/api/extract-pdf-text`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            // After successful API call, navigate to the next page
+            router.push("upload/read");
+          } else {
+            console.error("Failed to extract PDF text");
+          }
+        } catch (error) {
+          console.error("Error sending request:", error);
+        } finally {
+          setLoading(false); // Stop loading after navigation (if needed)
+        }
       };
 
       return (
@@ -44,6 +68,13 @@ export const columns: ColumnDef<Book>[] = [
           <p className="mt-[0.6px] cursor-pointer" onClick={handleClick}>
             {row.getValue("name")}
           </p>
+
+          {/* Loader */}
+          {loading && (
+            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+              <LoadingSpinner /> {/* Use the LoadingSpinner component */}
+            </div>
+          )}
         </div>
       );
     },
@@ -54,21 +85,20 @@ export const columns: ColumnDef<Book>[] = [
     accessorKey: "Booktype",
     header: ({ column }) => (
       <button
-        className="hover:bg-green-200  flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
+        className="hover:bg-green-200 flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Type
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </button>
     ),
-
     enableSorting: true,
   },
   {
     accessorKey: "Booktopic",
     header: ({ column }) => (
       <button
-        className="hover:bg-green-200  flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
+        className="hover:bg-green-200 flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Topic
@@ -81,7 +111,7 @@ export const columns: ColumnDef<Book>[] = [
     accessorKey: "date",
     header: ({ column }) => (
       <button
-        className="hover:bg-green-200  flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
+        className="hover:bg-green-200 flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Create Date

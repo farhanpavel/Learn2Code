@@ -6,6 +6,9 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 import { url } from "@/components/Url/page";
 import * as pdfjsLib from "pdfjs-dist";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 const PdfViewer = ({
   pdfUrl,
   setSelectedText,
@@ -38,9 +41,11 @@ const PdfViewer = ({
 
 export default function Page() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [store, setStore] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loading2, setLoading2] = useState(false); // Add loading state
   const [selectedText, setSelectedText] = useState<string>("");
-
+  const [summaryResult, setSummaryResult] = useState<string | null>(null); // To store the summary result
   useEffect(() => {
     const bookId = Cookies.get("Id");
 
@@ -59,10 +64,51 @@ export default function Page() {
           setLoading(false);
         }
       };
-
+      const fetchstoreData = async () => {
+        try {
+          const response = await fetch(`${url}/api/store`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch PDF URL");
+          }
+          const data = await response.json();
+          setStore(data.description);
+        } catch (error) {
+          console.error("Error fetching PDF:", error);
+        }
+      };
+      fetchstoreData();
       fetchPdfUrl();
     }
   }, []);
+
+  const handleSubmit = async () => {
+    setLoading2(true);
+    console.log(store, selectedText);
+    try {
+      const response = await fetch(`${url}/api/analyze-pdf`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          fullPdfText: store,
+          selectedLine: selectedText,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to analyze PDF");
+      }
+
+      const data = await response.json();
+      setLoading2(false);
+      setSummaryResult(data.result); // Assuming the API returns a "summary" field
+    } catch (error) {
+      console.error("Error analyzing PDF:", error);
+      setLoading2(false);
+    }
+  };
 
   return (
     <div className="relative">
@@ -89,10 +135,24 @@ export default function Page() {
             placeholder="Selected line will appear here..."
             className="flex-grow p-2 border border-gray-300 rounded-lg "
           />
-          <button className="bg-green-500 text-xs text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:ring-2 focus:ring-blue-300">
-            Submit
-          </button>
+          <Button
+            onClick={handleSubmit}
+            className="bg-green-500 text-xs text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:ring-2 focus:ring-blue-300"
+            disabled={loading2}
+          >
+            {loading2 ? (
+              <Loader2 className="animate-spin text-white" /> // Show loader if loading is true
+            ) : (
+              "Submit"
+            )}
+          </Button>
         </div>
+        {summaryResult && (
+          <div className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">
+            <h3 className="font-bold text-sm text-gray-800">Summary:</h3>
+            <p className="text-sm text-black-600">{summaryResult}</p>
+          </div>
+        )}
       </div>
     </div>
   );
