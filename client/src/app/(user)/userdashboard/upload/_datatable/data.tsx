@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -8,17 +8,53 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-
+import { useAppContext } from "@/components/tableContext/page";
 import { MoreHorizontal } from "lucide-react";
+import { url } from "@/components/Url/page";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export type Book = {
+  _id: string;
   pdfUrl: string;
   Booktype: string;
   Booktopic: string;
   date: string;
 };
+
 export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
+  const { setbookData, bookData } = useAppContext();
   const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`${url}/api/pdfs/${user._id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        alert("Failed to delete user");
+        throw new Error("Failed to delete user");
+      } else {
+        setbookData((prevData) =>
+          prevData.filter((item) => item._id !== user._id)
+        );
+        setIsDialogOpen(false); // Close the dialog after successful deletion
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -40,8 +76,39 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
           >
             Take Quiz
           </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={() => setIsDialogOpen(true)} // Open the confirmation dialog
+            className="hover:bg-blue-200 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
+          >
+            Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this item? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDialogOpen(false)} // Close dialog without deleting
+            >
+              Cancel
+            </Button>
+            <Button className="bg-red-600 text-white" onClick={handleDelete}>
+              Confirm Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

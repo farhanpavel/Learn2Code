@@ -15,6 +15,16 @@ const pdfGet = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const pdfDelete = async (req, res) => {
+  try {
+    const pdfs = await Pdf.deleteOne({
+      _id: req.params.id,
+    });
+    res.json(pdfs);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 const pdfGetByid = async (req, res) => {
   try {
     const pdfs = await Pdf.findOne({ _id: req.params.id });
@@ -63,4 +73,5 @@ module.exports = {
   pdfGet,
   pdfPost,
   pdfGetByid,
+  pdfDelete,
 };

@@ -49,11 +49,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { MdOutlineUploadFile } from "react-icons/md";
 import { PiUploadSimpleBold } from "react-icons/pi";
 import { Label } from "@/components/ui/label";
+import { useAppContext } from "@/components/tableContext/page";
+
 export default function Page() {
+  const { bookData, setbookData } = useAppContext();
+  const [isLoading, setLoading] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [book, setBook] = useState({
     Booktype: "PDF",
@@ -61,16 +66,21 @@ export default function Page() {
   });
   const [dataAll, setData] = useState<Book[]>([]);
   const [file, setFile] = useState<File | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // <-- Add this state
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBook({ ...book, [e.target.name]: e.target.value });
   };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
     }
   };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     if (!file) {
       alert("Please select a file before uploading.");
       return;
@@ -91,25 +101,31 @@ export default function Page() {
         alert("Server Error");
         throw new Error("Failed to upload file");
       } else {
+        setLoading(false);
+        const uploadedBookData = await response.json();
+        console.log(uploadedBookData);
+        setbookData([...bookData, uploadedBookData.data]);
         alert("Upload successful!");
+        setIsDialogOpen(false); // <-- Close the dialog on successful upload
       }
     } catch (err) {
       console.error("Upload error", err);
     }
   };
+
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch(`${url}/api/pdfs`);
       const json = await response.json();
       if (response.ok) {
-        setData(json);
+        setbookData(json);
       }
     };
     fetchData();
   }, []);
 
   const table = useReactTable({
-    data: dataAll,
+    data: bookData,
     columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -133,7 +149,7 @@ export default function Page() {
         </p>
         <div className="flex justify-between">
           <div>
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <button className="px-6 py-2 bg-green-800 text-white rounded-lg mt-2 flex items-center gap-x-1">
                   <PiUploadSimpleBold className="text-white text-sm" />
@@ -183,8 +199,19 @@ export default function Page() {
                     <button
                       type="submit"
                       className="px-6 py-2 bg-green-800 text-white rounded-lg mt-2 flex items-center gap-x-1"
+                      disabled={isLoading}
                     >
-                      <p className="text-semibold text-sm font-bold"> Upload</p>
+                      <p className="text-semibold text-sm font-bold">
+                        {" "}
+                        {isLoading ? (
+                          <div className="flex items-center">
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            Uploading...
+                          </div>
+                        ) : (
+                          "Upload"
+                        )}
+                      </p>
                     </button>
                   </DialogFooter>
                 </form>

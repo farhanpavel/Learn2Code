@@ -72,7 +72,7 @@ export const columns: ColumnDef<Book>[] = [
           {/* Loader */}
           {loading && (
             <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-              <LoadingSpinner /> {/* Use the LoadingSpinner component */}
+              <LoadingSpinner />
             </div>
           )}
         </div>
