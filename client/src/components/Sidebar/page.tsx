@@ -53,7 +53,7 @@ export default function Sidebar() {
       <nav
         onMouseEnter={() => setIsSidebarOpen(true)}
         onMouseLeave={() => setIsSidebarOpen(false)}
-        className={`sticky top-0 h-screen bg-gradient-to-b from-gray-200 via-green-200 to-[#38646e] pt-4 transition-all duration-300 rounded-l-lg text-black ${
+        className={`sticky top-0 h-screen  bg-gradient-to-b from-gray-200 via-green-200 to-[#38646e] pt-4 transition-all duration-300 rounded-l-lg text-black ${
           isSidebarOpen ? "w-64" : "w-16"
         }`}
       >
@@ -80,7 +80,7 @@ export default function Sidebar() {
                         }`
                   }
                   onClick={() => setIsSidebarOpen(false)}
-                  className={`group relative flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  className={`group relative overflow-hidden flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                     path === item.href
                       ? "bg-green-300 text-black"
                       : "hover:bg-green-100 hover:text-black"

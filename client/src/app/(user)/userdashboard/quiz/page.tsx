@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState, useRef } from "react";
 import { FaRegLightbulb } from "react-icons/fa6";
 import { IoBookSharp } from "react-icons/io5";
 import { AiOutlineReload } from "react-icons/ai";
@@ -14,11 +15,127 @@ import { FaMarkdown } from "react-icons/fa6";
 import { MdOutlineAccessTime } from "react-icons/md";
 import { RiTimerFill } from "react-icons/ri";
 import { FaAngleDown } from "react-icons/fa";
-import { FaPlay } from "react-icons/fa";
+import { FaPlay, FaSquare } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { url } from "@/components/Url/page";
+import Cookies from "js-cookie";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRouter } from "next/navigation";
+
+type Quiz = {
+  theoryquestion: string;
+  _id: string;
+};
 
 export default function Page() {
+  const [dataAll, setData] = useState<Quiz[]>([]);
+  const [isRunning, setIsRunning] = useState(false);
+  const [time, setTime] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const router = useRouter();
+  const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+  const title = Cookies.get("title");
+  const handleStartStop = () => {
+    if (isRunning) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    } else {
+      intervalRef.current = setInterval(() => {
+        setTime((prevTime) => {
+          if (prevTime > 0) return prevTime - 1;
+          else {
+            clearInterval(intervalRef.current!);
+            router.push("/userdashboard/quiz/result");
+            return 0;
+          }
+        });
+      }, 1000);
+    }
+    setIsRunning(!isRunning);
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(
+      remainingSeconds
+    ).padStart(2, "0")}`;
+  };
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch(`${url}/api/data/question-generate`);
+      const json = await response.json();
+      if (response.ok) {
+        setData(json);
+        setTime(json.length * 2 * 60);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleReload = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current); // Stop the timer
+    }
+    setTime(dataAll.length * 2 * 60); // Reset the timer to initial value
+    setIsRunning(false); // Ensure that the timer isn't running
+  };
+  const handleInputChange = (questionId: string, value: string) => {
+    setAnswers((prevAnswers) => ({
+      ...prevAnswers,
+      [questionId]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const allAnswers = dataAll.reduce((acc, item) => {
+      acc[item._id] = answers[item._id] || "I do not know";
+      return acc;
+    }, {} as { [key: string]: string });
+
+    try {
+      const response = await fetch(`${url}/api/ans`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(allAnswers),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log("Answers submitted successfully:", result);
+        router.push("/userdashboard/quiz/result");
+      } else {
+        console.error("Error submitting answers:", result);
+      }
+    } catch (error) {
+      console.error("Error submitting answers:", error);
+    }
+  };
+
   return (
     <div className="p-9">
       <div className="flex justify-between items-center w-full border-b-2 border-[#d1cece] pb-4">
@@ -33,17 +150,23 @@ export default function Page() {
         </div>
 
         <div className="flex space-x-2 items-center">
-          <button className="px-6 py-2 bg-green-800 text-white rounded-lg flex items-center gap-x-1">
+          <button
+            onClick={handleSubmit}
+            className="px-6 py-2 bg-green-800 text-white rounded-lg flex items-center gap-x-1"
+          >
             <IoBookSharp className="text-white text-sm" />
             <p className="text-semibold text-sm font-bold"> Submit</p>
           </button>
-          <button className="px-6 py-2  text-red-800 border-2 border-red-800  rounded-lg flex items-center gap-x-1">
+          <button
+            onClick={handleReload}
+            className="px-6 py-2 text-red-800 border-2 border-red-800 rounded-lg flex items-center gap-x-1"
+          >
             <AiOutlineReload className="text-red-800 text-sm stroke-[45px]" />
             <p className="text-semibold text-sm font-bold"> Reload</p>
           </button>
         </div>
       </div>
-      {/*  */}
+
       <div className="flex justify- mt-10">
         <div className="sticky top-0 h-screen border-r-2 border-[#d1cece] w-1/4">
           <div>
@@ -70,7 +193,7 @@ export default function Page() {
             </div>
           </div>
           <div className="flex justify-between w-[90%] mt-4">
-            <div className="space-y-2">
+            <div className="space-y-2 w-[40%]">
               <div className="flex items-center space-x-2 text-yellow-600 ">
                 <MdSubtitles className="text-xs" />
                 <p className="text-sm font-semibold">Title</p>
@@ -80,12 +203,12 @@ export default function Page() {
                 <p className="text-sm font-semibold">Difficulty</p>
               </div>
             </div>
-            <div className="space-y-2 text-sm text-[#4a4a4a]">
+            <div className="space-y-2  w-[30%] text-sm text-[#4a4a4a]">
               <div>
-                <h1>Hello</h1>
+                <h1>{title ? title.substring(0, 5) + ".." : ""}</h1>
               </div>
               <div>
-                <h1>Hello</h1>
+                <h1>Easy</h1>
               </div>
             </div>
           </div>
@@ -96,13 +219,7 @@ export default function Page() {
             </div>
           </div>
           <div className="flex justify-between w-[90%] mt-4">
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-yellow-600 ">
-                <MdOutlineQuestionAnswer className="text-xs" />
-                <p className="text-sm font-semibold">
-                  CQ<span className="text-xs">s</span>
-                </p>
-              </div>
+            <div className="space-y-2 w-[60%]">
               <div className="flex items-center space-x-2 text-yellow-600 ">
                 <AiFillSwitcher className=" text-xs" />
                 <p className="text-sm font-semibold">Total Question</p>
@@ -116,18 +233,15 @@ export default function Page() {
                 <p className="text-sm font-semibold">Duration</p>
               </div>
             </div>
-            <div className="space-y-2 text-sm text-[#4a4a4a]">
+            <div className="space-y-2 w-[30%] text-sm text-[#4a4a4a]">
               <div>
-                <h1>Hello</h1>
+                <h1>{dataAll.length}</h1>
               </div>
               <div>
-                <h1>Hello</h1>
+                <h1>{dataAll.length * 2}</h1>
               </div>
               <div>
-                <h1>Hello</h1>
-              </div>
-              <div>
-                <h1>Hello</h1>
+                <h1>{dataAll.length * 2} min</h1>
               </div>
             </div>
           </div>
@@ -138,121 +252,48 @@ export default function Page() {
                 <h1 className="text-sm font-bold">Timer</h1>
               </div>
             </div>
-            <div className="text-center flex items-center space-x-4 justify-center w-[90%] mt-6 border-2 border-yellow-600 p-3 text-yellow-600 rounded-lg ">
-              <h1 className="font-bold">00.20</h1>
-              <FaPlay />
+            <div className="text-center flex items-center space-x-4 justify-center w-[90%] mt-6 border-2 border-yellow-600 p-3 text-yellow-600 rounded-lg">
+              <h1 className="font-bold">{formatTime(time)}</h1>
+              <button onClick={handleStartStop} className="focus:outline-none">
+                {isRunning ? <FaSquare /> : <FaPlay />}
+              </button>
             </div>
           </div>
         </div>
+
         <div className="w-[65%] p-7 mx-5">
           <div>
-            <h1 className="font-bold text-lg text-green-800">Short Quesions</h1>
+            <h1 className="font-bold text-lg text-green-800">
+              Short Questions
+            </h1>
           </div>
-          <div>
-            <div className="flex  gap-x-5 mt-5">
-              <h1 className="border-[2px] rounded-full w-3 h-3 flex items-center justify-center font-bold border-green-800  p-4">
-                1
-              </h1>
-              <div>
+
+          {dataAll.map((item, index) => (
+            <div key={item._id}>
+              <div className="flex gap-x-5 mt-5">
+                <h1 className="border-[2px] rounded-full w-3 h-3 flex items-center justify-center font-bold border-green-800 p-4">
+                  {index + 1}
+                </h1>
                 <div>
-                  <h1 className="text-sm text-[#4a4a4a] font-light">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Voluptatem quia quod quidem reiciendis id minima, velit
-                    fugiat quos optio. Voluptatem.?
-                  </h1>
-                </div>
-                <div className="mt-4">
-                  <Textarea
-                    className="border-2 resize-none border-green-800  "
-                    rows={5}
-                  />
+                  <div>
+                    <h1 className="text-sm text-[#4a4a4a] font-light">
+                      {item.theoryquestion}
+                    </h1>
+                  </div>
+                  <div className="mt-4">
+                    <Textarea
+                      className="border-2 resize-none border-green-800"
+                      rows={5}
+                      value={answers[item._id] || ""} // Bind the input value
+                      onChange={
+                        (e) => handleInputChange(item._id, e.target.value) // Update the state
+                      }
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-            {/*  */}
-            <div className="flex  gap-x-5 mt-5">
-              <h1 className="border-[2px] rounded-full w-3 h-3 flex items-center justify-center font-bold border-green-800  p-4">
-                2
-              </h1>
-              <div>
-                <div>
-                  <h1 className="text-sm text-[#4a4a4a] font-light">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Voluptatem quia quod quidem reiciendis id minima, velit
-                    fugiat quos optio. Voluptatem.?
-                  </h1>
-                </div>
-                <div className="mt-4">
-                  <Textarea
-                    className="border-2 resize-none border-green-800  "
-                    rows={5}
-                  />
-                </div>
-              </div>
-            </div>
-            {/*  */}
-            <div className="flex  gap-x-5 mt-5">
-              <h1 className="border-[2px] rounded-full w-3 h-3 flex items-center justify-center font-bold border-green-800  p-4">
-                3
-              </h1>
-              <div>
-                <div>
-                  <h1 className="text-sm text-[#4a4a4a] font-light">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Voluptatem quia quod quidem reiciendis id minima, velit
-                    fugiat quos optio. Voluptatem.?
-                  </h1>
-                </div>
-                <div className="mt-4">
-                  <Textarea
-                    className="border-2 resize-none border-green-800  "
-                    rows={5}
-                  />
-                </div>
-              </div>
-            </div>
-            {/*  */}
-            <div className="flex  gap-x-5 mt-5">
-              <h1 className="border-[2px] rounded-full w-3 h-3 flex items-center justify-center font-bold border-green-800  p-4">
-                4
-              </h1>
-              <div>
-                <div>
-                  <h1 className="text-sm text-[#4a4a4a] font-light">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Voluptatem quia quod quidem reiciendis id minima, velit
-                    fugiat quos optio. Voluptatem.?
-                  </h1>
-                </div>
-                <div className="mt-4">
-                  <Textarea
-                    className="border-2 resize-none border-green-800  "
-                    rows={5}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="flex  gap-x-5 mt-5">
-              <h1 className="border-[2px] rounded-full w-3 h-3 flex items-center justify-center font-bold border-green-800  p-4">
-                4
-              </h1>
-              <div>
-                <div>
-                  <h1 className="text-sm text-[#4a4a4a] font-light">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Voluptatem quia quod quidem reiciendis id minima, velit
-                    fugiat quos optio. Voluptatem.?
-                  </h1>
-                </div>
-                <div className="mt-4">
-                  <Textarea
-                    className="border-2 resize-none border-green-800  "
-                    rows={5}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

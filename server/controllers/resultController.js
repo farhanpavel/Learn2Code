@@ -1,0 +1,95 @@
+const mongoose = require("mongoose");
+const { ansSchema } = require("../models/ansSchema");
+const { storeSchema } = require("../models/storeSchema");
+const { questionSchema } = require("../models/questionSchema");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { resultSchema } = require("../models/resultSchema");
+const Store = mongoose.model("store", storeSchema);
+const Question = mongoose.model("question", questionSchema);
+const Ans = mongoose.model("Ans", ansSchema);
+const Result = mongoose.model("Result", resultSchema);
+require("dotenv").config();
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+const resultGet = async (req, res) => {
+  try {
+    const latestStore = await Store.findOne().sort({ date: -1 });
+
+    if (!latestStore) {
+      return res.status(404).json({ message: "No summary found" });
+    }
+
+    const questions = await Question.find();
+    const answers = await Ans.find();
+
+    const answerMap = new Map();
+    answers.forEach((ans) => {
+      answerMap.set(ans.id.toString(), ans.answer);
+    });
+
+    const combinedData = questions.map((q) => ({
+      id: q._id,
+      question: q.theoryquestion,
+      ans: answerMap.get(q._id.toString()) || "I do not know",
+    }));
+
+    const aiInput = {
+      summary: latestStore.description,
+      data: combinedData,
+    };
+
+    const aiResponse = await getAIResponse(aiInput);
+
+    const finalResult = aiResponse.map((aiItem) => {
+      const matchingData = combinedData.find(
+        (item) => item.id.toString() === aiItem._id.toString()
+      );
+
+      return {
+        ...aiItem,
+        question: matchingData?.question || "Unknown question",
+        answer: matchingData?.ans || "Unknown answer",
+      };
+    });
+
+    res.status(200).json(finalResult);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+const getAIResponse = async (data) => {
+  const inputPrompt = `
+    Based on the following summary: 
+    "${data.summary}"
+  
+    Evaluate the answers given for the corresponding questions.
+    Provide a JSON response with:
+    - _id (matching the question)
+    - comment (feedback on the answer)
+    - correctness (choose from 0%, 25%, 50%, 75%, 100%)
+    - original answer (rephrase it in two lines)
+  
+    Here are the questions and answers:
+    ${JSON.stringify(data.data, null, 2)}
+    `;
+
+  try {
+    const response = await model.generateContent(inputPrompt);
+    const rawText = response.response.text();
+
+    const jsonMatch = rawText.match(/\[.*\]/s);
+    if (!jsonMatch) throw new Error("AI response is not in valid JSON format.");
+
+    const cleanJson = jsonMatch[0];
+    return JSON.parse(cleanJson);
+  } catch (error) {
+    console.error("Error generating AI feedback:", error);
+    throw new Error("Failed to evaluate answers using AI.");
+  }
+};
+
+module.exports = { resultGet };

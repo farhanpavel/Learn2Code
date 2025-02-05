@@ -1,8 +1,15 @@
 const express = require("express");
 const multer = require("multer");
-const { extractData } = require("../controllers/extractController");
+const {
+  extractData,
+  questionData,
+  questionGet,
+} = require("../controllers/extractController");
 
 const extractRoutes = express.Router();
 
 extractRoutes.post("/extract-pdf-text", extractData);
+
+extractRoutes.post("/data/question-generate", questionData);
+extractRoutes.get("/data/question-generate", questionGet);
 module.exports = extractRoutes;

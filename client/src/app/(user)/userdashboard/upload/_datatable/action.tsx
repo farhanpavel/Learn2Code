@@ -7,6 +7,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ActionsCell } from "./data";
 import { url } from "@/components/Url/page";
 import LoadingSpinner from "@/components/Loader/page";
+import ScaleLoader from "react-spinners/ScaleLoader";
 export type Book = {
   pdfUrl: string;
   Booktype: string;
@@ -50,7 +51,7 @@ export const columns: ColumnDef<Book>[] = [
 
           if (response.ok) {
             const data = await response.json();
-            // After successful API call, navigate to the next page
+
             router.push("upload/read");
           } else {
             console.error("Failed to extract PDF text");
@@ -72,7 +73,7 @@ export const columns: ColumnDef<Book>[] = [
           {/* Loader */}
           {loading && (
             <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-              <LoadingSpinner />
+              <ScaleLoader color="#1dce4d" />
             </div>
           )}
         </div>

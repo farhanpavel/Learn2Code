@@ -6,6 +6,8 @@ const aiRoutes = require("./routes/aiRoute");
 const pdfRoutes = require("./routes/pdfRoute");
 const storeRoutes = require("./routes/storeRoute");
 const extractRoutes = require("./routes/extractRoute");
+const ansRoutes = require("./routes/ansRoute");
+const resultRoutes = require("./routes/resultRoute");
 require("dotenv").config();
 
 const app = express();
@@ -37,3 +39,5 @@ app.use("/api", aiRoutes);
 app.use("/api", storeRoutes);
 app.use("/api", pdfRoutes);
 app.use("/api", extractRoutes);
+app.use("/api", ansRoutes);
+app.use("/api", resultRoutes);
