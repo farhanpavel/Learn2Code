@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { title } from 'process';
 import React from 'react';
 import { AiFillLayout, AiFillSwitcher, AiOutlineReload } from 'react-icons/ai';
-import { FaLaptopCode, FaMarkdown, FaPlay, FaRegLightbulb, FaSquare, FaTools } from 'react-icons/fa';
+import { FaChevronDown, FaLaptopCode, FaMarkdown, FaPlay, FaRegLightbulb, FaSquare, FaTools } from 'react-icons/fa';
 import { HiOutlineLightBulb } from 'react-icons/hi';
 import { IoBookSharp } from 'react-icons/io5';
 import VideoCard from './_video/VideoCard';
@@ -18,7 +18,7 @@ export default function Page() {
     return (
         <div className="px-9 bg-gray-100 w-[95vw] items-center justify-items-center content-center">
             <div className='fixed bg-gray-100 w-full z-10 top-0 h-9' />
-            <div className="flex top-9 justify-between items-center w-[88vw] border-b-2 border-[#d1cece] fixed bg-gray-100 z-10 pb-4">
+            <div className="flex top-9 justify-between items-center w-[87vw] border-b-2 border-[#d1cece] fixed bg-gray-100 z-10 pb-4">
                 <div className="space-y-2">
                     <div className="flex gap-x-2 items-center text-green-600">
                         <FaLaptopCode className="text-3xl" />
@@ -55,7 +55,15 @@ export default function Page() {
                     <div className='w-4' />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button className="bg-green-800 text-white">{position.charAt(0).toUpperCase()}{position.substring(1)}</Button>
+                            <div className="flex flex-row gap-1 items-center">
+                            <Button className="bg-green-800 text-white w-32">
+                                {position.charAt(0).toUpperCase()}{position.substring(1)}
+                            </Button>
+                            {/* Dropdown button */}
+                            <Button color='gray' className='bg-gray-200 border border-gray-800 hover:bg-green-800'>
+                                <FaChevronDown color='black'/>
+                            </Button>
+                            </div>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56">
                             <DropdownMenuLabel>Choose Programming Language</DropdownMenuLabel>
