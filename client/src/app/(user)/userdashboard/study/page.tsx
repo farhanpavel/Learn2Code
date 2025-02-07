@@ -1,15 +1,75 @@
 "use client";
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { time } from 'console';
 import { useRouter } from 'next/navigation';
+import { title } from 'process';
 import React from 'react';
+import { AiFillLayout, AiFillSwitcher, AiOutlineReload } from 'react-icons/ai';
+import { FaLaptopCode, FaMarkdown, FaPlay, FaRegLightbulb, FaSquare, FaTools } from 'react-icons/fa';
+import { HiOutlineLightBulb } from 'react-icons/hi';
+import { IoBookSharp } from 'react-icons/io5';
 
 export default function Page() {
     const router = useRouter();
+    const [position, setPosition] = React.useState("Python")
+    const [lang, setLang] = React.useState("Bangla")
     return (
-        <div>
-        <h1>Study</h1>
-        <Button onClick={()=>{router.push('/userdashboard/study/watch')}}
-        >Watch video</Button>
+        <div className="p-9">
+            <div className="flex justify-between items-center w-full border-b-2 border-[#d1cece] pb-4">
+                <div className="space-y-2">
+                    <div className="flex gap-x-2 items-center text-green-600">
+                        <FaLaptopCode className="text-3xl" />
+                        <h1 className="text-2xl font-bold">Start Learning</h1>
+                    </div>
+                    <p className="text-xs text-[#4a4a4a]">
+                        Watch coding tutorials and start coding right now!
+                    </p>
+                </div>
+
+                <div className="flex space-x-2 items-center">
+                    <div>
+                        <div className="flex -space-x-px">
+                            <Button
+                                className={`rounded-r-none focus:z-10 hover:bg-green-300 ${lang === "Bangla" ? "bg-green-800 text-white" : "bg-white text-black"}`}
+                                onClick={() => setLang("Bangla")}
+                            >
+                                Bangla
+                            </Button>
+                            <Button
+                                className={`rounded-none focus:z-10 hover:bg-green-300 ${lang === "English" ? "bg-green-800 text-white" : "bg-white text-black"}`}
+                                onClick={() => setLang("English")}
+                            >
+                                English
+                            </Button>
+                            <Button
+                                className={`rounded-l-none focus:z-10 hover:bg-green-300 ${lang === "Hindi" ? "bg-green-800 text-white" : "bg-white text-black"}`}
+                                onClick={() => setLang("Hindi")}
+                            >
+                                Hindi
+                            </Button>
+                        </div>
+                    </div>
+                    <div className='w-4'/>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button className="bg-green-800 text-white">{position.charAt(0).toUpperCase()}{position.substring(1)}</Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56">
+                            <DropdownMenuLabel>Choose Programming Language</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
+                                <DropdownMenuRadioItem className={position === "python" ? "outline-green-800" : ""} value="python">Python</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem className={position === "java" ? "outline-green-800" : ""} value="java">Java</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem className={position === "c++" ? "outline-green-800" : ""} value="c++">C++</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem className={position === "c#" ? "outline-green-800" : ""} value="c#">C#</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem className={position === "javascript" ? "outline-green-800" : ""} value="javascript">JavaScript</DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem className={position === "typescript" ? "outline-green-800" : ""} value="typescript">TypeScript</DropdownMenuRadioItem>
+                            </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            </div>
         </div>
     );
 }
