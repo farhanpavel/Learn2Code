@@ -9,14 +9,16 @@ import { AiFillLayout, AiFillSwitcher, AiOutlineReload } from 'react-icons/ai';
 import { FaLaptopCode, FaMarkdown, FaPlay, FaRegLightbulb, FaSquare, FaTools } from 'react-icons/fa';
 import { HiOutlineLightBulb } from 'react-icons/hi';
 import { IoBookSharp } from 'react-icons/io5';
+import VideoCard from './_video/VideoCard';
 
 export default function Page() {
     const router = useRouter();
     const [position, setPosition] = React.useState("Python")
     const [lang, setLang] = React.useState("Bangla")
     return (
-        <div className="p-9">
-            <div className="flex justify-between items-center w-full border-b-2 border-[#d1cece] pb-4">
+        <div className="px-9 bg-gray-100 w-[95vw] items-center justify-items-center content-center">
+            <div className='fixed bg-gray-100 w-full z-10 top-0 h-9' />
+            <div className="flex top-9 justify-between items-center w-[88vw] border-b-2 border-[#d1cece] fixed bg-gray-100 z-10 pb-4">
                 <div className="space-y-2">
                     <div className="flex gap-x-2 items-center text-green-600">
                         <FaLaptopCode className="text-3xl" />
@@ -50,7 +52,7 @@ export default function Page() {
                             </Button>
                         </div>
                     </div>
-                    <div className='w-4'/>
+                    <div className='w-4' />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button className="bg-green-800 text-white">{position.charAt(0).toUpperCase()}{position.substring(1)}</Button>
@@ -69,6 +71,11 @@ export default function Page() {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
+            </div>
+            <div className="mt-32 grid grid-cols-3 gap-4 justify-items-center items-center pb-4">
+                {Array.from({ length: 10 }).map((_, index) => (
+                    <VideoCard key={index} />
+                ))}
             </div>
         </div>
     );
