@@ -21,7 +21,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
+import LoadingSpinner from "@/components/Loader/page";
+import ScaleLoader from "react-spinners/ScaleLoader";
+import Cookies from "js-cookie";
 export type Book = {
   _id: string;
   pdfUrl: string;
@@ -33,7 +35,35 @@ export type Book = {
 export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
   const { setbookData, bookData } = useAppContext();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleQuiz = async () => {
+    console.log(user.pdfUrl);
+    Cookies.set("title", user.Booktopic);
+    setLoading(true);
+    try {
+      const response = await fetch(`${url}/api/data/question-generate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pdfUrl: user.pdfUrl }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        router.push("/userdashboard/quiz");
+      } else {
+        console.error("Failed to extract PDF text");
+      }
+    } catch (error) {
+      console.error("Error sending request:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDelete = async () => {
     try {
@@ -48,7 +78,7 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
         setbookData((prevData) =>
           prevData.filter((item) => item._id !== user._id)
         );
-        setIsDialogOpen(false); // Close the dialog after successful deletion
+        setIsDialogOpen(false);
       }
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -59,7 +89,7 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="  p-1 hover:bg-green-200 outline-none rounded-full hover:transition-all hover:delay-100">
+          <button className="p-1 hover:bg-green-200 outline-none rounded-full hover:transition-all hover:delay-100">
             <MoreHorizontal className="h-3 w-3" />
           </button>
         </DropdownMenuTrigger>
@@ -69,17 +99,15 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={() => {
-              router.push("/flightdashboard/entry/schedule/details");
-            }}
+            onClick={() => handleQuiz()}
             className="hover:bg-green-200 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
           >
             Take Quiz
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            onClick={() => setIsDialogOpen(true)} // Open the confirmation dialog
-            className="hover:bg-blue-200 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
+            onClick={() => setIsDialogOpen(true)}
+            className="hover:bg-red-400 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
           >
             Delete
           </DropdownMenuItem>
@@ -97,10 +125,7 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsDialogOpen(false)} // Close dialog without deleting
-            >
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
               Cancel
             </Button>
             <Button className="bg-red-600 text-white" onClick={handleDelete}>
@@ -109,6 +134,12 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {loading && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+          <ScaleLoader color="#1dce4d" />
+        </div>
+      )}
     </>
   );
 };
