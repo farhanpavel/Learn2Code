@@ -15,8 +15,17 @@ const getGeneratedPlan = async (req, res) => {
         .json({ error: "Please enter a query to get a plan" });
     }
 
-    // Adjust prompt to enforce strict JSON formatting
-    const inputPrompt = `Give me a roadmap for ${query}. Return a JSON array where each element is a step in the roadmap, categorized by difficulty level. Respond with JSON only, no explanations or markdown formatting.`;
+    // Adjusted prompt to include references (docs & YouTube)
+    const inputPrompt = `Give me a roadmap for ${query}. 
+    Return a JSON array where each element is an object with:
+    - step: A specific learning step.
+    - difficulty: The difficulty level (Beginner, Intermediate, Advanced).
+    - reference_links: An array of objects containing:
+      - title: The title of the reference.
+      - url: The URL of the reference.
+      - type: Either "documentation" or "video" (for YouTube links).
+    
+    Respond with JSON only, no explanations or markdown formatting.`;
 
     const response = await model.generateContent(inputPrompt);
 
