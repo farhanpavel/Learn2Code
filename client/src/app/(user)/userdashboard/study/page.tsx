@@ -16,7 +16,7 @@ export default function Page() {
     const [position, setPosition] = React.useState("Python")
     const [lang, setLang] = React.useState("Bangla")
     return (
-        <div className="px-9 bg-gray-100 w-[95vw] items-center justify-items-center content-center">
+        <div className="ps-12 pr-9 bg-gray-100 w-full items-center justify-items-center content-center">
             <div className='fixed bg-gray-100 w-full z-10 top-0 h-9' />
             <div className="flex top-9 justify-between items-center w-[87vw] border-b-2 border-[#d1cece] fixed bg-gray-100 z-10 pb-4">
                 <div className="space-y-2">
@@ -80,7 +80,7 @@ export default function Page() {
                     </DropdownMenu>
                 </div>
             </div>
-            <div className="mt-32 grid grid-cols-3 gap-4 justify-items-center items-center pb-4">
+            <div className="mt-32 ps-10 grid grid-cols-3 gap-4 justify-items-center items-center pb-4">
                 {Array.from({ length: 10 }).map((_, index) => (
                     <VideoCard key={index} />
                 ))}
