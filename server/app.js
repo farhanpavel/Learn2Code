@@ -8,6 +8,7 @@ const storeRoutes = require("./routes/storeRoute");
 const extractRoutes = require("./routes/extractRoute");
 const ansRoutes = require("./routes/ansRoute");
 const resultRoutes = require("./routes/resultRoute");
+const plannerRoute = require("./routes/planner");
 require("dotenv").config();
 
 const app = express();
@@ -41,3 +42,4 @@ app.use("/api", pdfRoutes);
 app.use("/api", extractRoutes);
 app.use("/api", ansRoutes);
 app.use("/api", resultRoutes);
+app.use("/api",plannerRoute);
