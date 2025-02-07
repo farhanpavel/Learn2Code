@@ -47,7 +47,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="mx-auto mt-32 mx-2">
+      <div className="ps-9 mx-auto mt-32 mx-2">
         {/* Video Embed */}
         <div className={`aspect-video w-full rounded-lg overflow-hidden shadow-lg ${isEditorOpen ? 'w-1/2' : 'w-full'}`}>
           <iframe
