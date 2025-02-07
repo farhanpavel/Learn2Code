@@ -1,14 +1,12 @@
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-
-
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-pro-exp-02-05" });
 
 const getGeneratedPlan = async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query } = req.query;
 
     // Validate input
     if (!query) {
@@ -17,11 +15,27 @@ const getGeneratedPlan = async (req, res) => {
         .json({ error: "Please enter a query to get a plan" });
     }
 
-    const inputPrompt = `I want to learn ${query}. give me a roadmap to learn it. give me a json object where there will be an array of objects. each object will have a title and a description. the title will be the name of the course and the description will be the description of the course. the courses should be in order of learning. the first course should be the most basic and the last course should be the most advanced.`;
+    // Adjust prompt to enforce strict JSON formatting
+    const inputPrompt = `Give me a roadmap for ${query}. Return a JSON array where each element is a step in the roadmap, categorized by difficulty level. Respond with JSON only, no explanations or markdown formatting.`;
 
     const response = await model.generateContent(inputPrompt);
 
-    res.status(200).json({ result: response.response.text() });
+    // Extract response text
+    let responseText = response.response.text().trim();
+
+    // Clean the response: Remove triple backticks and `json` labels if present
+    responseText = responseText.replace(/```json|```/g, "").trim();
+
+    // Attempt to parse the JSON response
+    let jsonResponse;
+    try {
+      jsonResponse = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("Error parsing JSON:", parseError);
+      return res.status(500).json({ error: "Failed to parse AI response." });
+    }
+
+    res.status(200).json({ result: jsonResponse });
   } catch (error) {
     console.error("Error generating response from AI:", error);
     res.status(500).json({ error: "Failed to generate response from AI." });
