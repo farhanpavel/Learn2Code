@@ -4,8 +4,9 @@ import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Result } from '../page'
 import { Button } from '@/components/ui/button'
-import { Trash2 } from 'lucide-react'
+import { PlayCircle, Trash2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 
 const PlannerPageSingle = () => {
   const { id } = useParams();
@@ -118,32 +119,43 @@ const PlannerPageSingle = () => {
           <h3 className="font-semibold mt-10 text-green-800">Progress</h3>
 
           <div className="steps-list">
+            <Accordion type="multiple">
             {plan.steps.map((step,index) => (
-              <div key={step._id} className="step-card p-4 my-2 border rounded-lg">
-                <p><strong>Day {index+1}:</strong> {step.step}</p>
-                <p><strong>Difficulty:</strong> {step.difficulty}</p>
-                <p><strong>Status:</strong> {step.status}</p>
-                {step.status === 'Not Started' && (
-                  <button
-                    onClick={() => startStep(String(step._id))}
-                    className="bg-blue-500 text-white p-2 rounded mt-2"
-                  >
-                    Start Step
-                  </button>
-                )}
-                {step.status === 'In Progress' && (
-                  <button
-                    onClick={() => completeStep(String(step._id))}
-                    className="bg-green-500 text-white p-2 rounded mt-2"
-                  >
-                    Complete Step
-                  </button>
-                )}
-              </div>
+              <AccordionItem value={`item-${step._id}`} key={step._id} defaultChecked>
+              <AccordionTrigger><Badge className="font-semibold bg-green-800 hover:bg-green-700">Day {index+1}</Badge> <p className="flex-1 ml-2">{step.step}</p>
+              <Button size="sm" className='bg-green-800 hover:bg-green-900 mr-2' disabled={step.status=="Completed"}><PlayCircle className='mr-1' size={18}/> Start</Button>
+              </AccordionTrigger>
+              <AccordionContent>
+                {/* {step.status == "Comple"} */}
+              </AccordionContent>
+            </AccordionItem>
+            
+              // <div key={step._id} className="step-card p-4 my-2 border rounded-lg">
+              //   <p><strong>Day {index+1}:</strong> {step.step}</p>
+              //   <p><strong>Difficulty:</strong> {step.difficulty}</p>
+              //   <p><strong>Status:</strong> {step.status}</p>
+              //   {step.status === 'Not Started' && (
+              //     <button
+              //       onClick={() => startStep(String(step._id))}
+              //       className="bg-blue-500 text-white p-2 rounded mt-2"
+              //     >
+              //       Start Step
+              //     </button>
+              //   )}
+              //   {step.status === 'In Progress' && (
+              //     <button
+              //       onClick={() => completeStep(String(step._id))}
+              //       className="bg-green-500 text-white p-2 rounded mt-2"
+              //     >
+              //       Complete Step
+              //     </button>
+              //   )}
+              // </div>
             ))}
+            </Accordion>
           </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end mt-10">
           <Button
             onClick={deletePlanner}
             variant="destructive"
