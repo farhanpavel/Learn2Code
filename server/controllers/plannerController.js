@@ -78,20 +78,26 @@ const createPlanner = async (req, res) => {
   try {
     const { title, description, level, steps } = req.body;
 
+    // Check if the level is provided
+    if (!level) {
+      return res.status(400).json({ error: 'Level is required to create a planner' });
+    }
+
     const newPlanner = new Planner({
       title,
       description,
-      level,
-      steps
+      level,  // Make sure this is coming from the request body
+      steps,
     });
 
     await newPlanner.save();
-    res.status(201).json({ message: "Planner created successfully!", planner: newPlanner });
+    res.status(201).json({ message: 'Planner created successfully!', planner: newPlanner });
   } catch (error) {
-    console.error("Error creating planner:", error);
-    res.status(500).json({ error: "Failed to create planner." });
+    console.error('Error creating planner:', error);
+    res.status(500).json({ error: 'Failed to create planner.' });
   }
 };
+
 
 // 📌 Get All Planners
 const getAllPlanners = async (req, res) => {
