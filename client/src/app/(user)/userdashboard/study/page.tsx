@@ -4,17 +4,49 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadio
 import { time } from 'console';
 import { useRouter } from 'next/navigation';
 import { title } from 'process';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AiFillLayout, AiFillSwitcher, AiOutlineReload } from 'react-icons/ai';
 import { FaChevronDown, FaLaptopCode, FaMarkdown, FaPlay, FaRegLightbulb, FaSquare, FaTools } from 'react-icons/fa';
 import { HiOutlineLightBulb } from 'react-icons/hi';
 import { IoBookSharp } from 'react-icons/io5';
 import VideoCard from './_video/VideoCard';
+import ScaleLoader from 'react-spinners/ScaleLoader';
+import { url } from '@/components/Url/page';
 
 export default function Page() {
     const router = useRouter();
     const [position, setPosition] = React.useState("Python")
+    const [videos, setVideos] = React.useState<any>([])
+    const [loading, setLoading] = React.useState(false)
     const [lang, setLang] = React.useState("Bangla")
+
+    useEffect(() => {
+        const fetchVideos = async () => {
+            setLoading(true);
+            try {
+            const response = await fetch(`${url}/api/get-videos?pl=${position.toLowerCase()}&lang=${lang.toLowerCase()}`);
+            const data = await response.json();
+            setVideos(data.contents);
+            console.log(data.contents);
+            } catch (error) {
+            console.error('Error fetching videos:', error);
+            } finally {
+            setLoading(false);
+            }
+        };
+
+        fetchVideos();
+    }, [])
+
+    if(loading)
+    return (
+        <div className='p-9'>
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+          <ScaleLoader color="#1dce4d" />
+        </div>
+        </div>
+    );
+
     return (
         <div className="ps-12 pr-9 bg-gray-100 w-full items-center justify-items-center content-center">
             <div className='fixed bg-gray-100 w-full z-10 top-0 h-9' />
@@ -81,8 +113,8 @@ export default function Page() {
                 </div>
             </div>
             <div className="mt-32 ps-10 grid grid-cols-3 gap-4 justify-items-center items-center pb-4">
-                {Array.from({ length: 10 }).map((_, index) => (
-                    <VideoCard key={index} />
+                {videos.map((item:any, index:any) => (
+                    <VideoCard key={item.videoId} video={item.video} />
                 ))}
             </div>
         </div>

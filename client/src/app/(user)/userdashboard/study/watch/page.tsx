@@ -3,17 +3,37 @@ import { useState } from 'react';
 import { FaLaptopCode, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import CodeEditor from '../_video/CodeEditor';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Page() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
-  const videoTitle = "How to Build a Modern Web App with Next.js and Tailwind CSS";
-  const videoDescription = "In this video, we'll walk you through the process of building a modern web application using Next.js and Tailwind CSS. Learn how to set up your project, create responsive layouts, and style your components efficiently.";
-  const channel = {
-    name: "FireShip.io",
-    avatar: "https://cdn.discordapp.com/discovery-splashes/1015095797689360444/39c2f83d83a050c41c78546eae47ad58.jpg?size=2048", // Replace with a channel avatar image
-  };
-  const views = "1.2M views";
+  const [videoTitle, setVideoTitle] = useState('');
+  const [videoDescription, setVideoDescription] = useState('');
+  const [channel, setChannel] = useState({ name: '', avatar: '' });
+  const [views, setViews] = useState('');
+  const [videoId, setVideoId] = useState('');
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const videoTitle = searchParams.get('title') || '';
+    const videoDescription = searchParams.get('description') || '';
+    const channelName = searchParams.get('channelName') || '';
+    const channelAvatar = searchParams.get('channelAvatar') || '';
+    const views = searchParams.get('views') || '';
+    const videoId = searchParams.get('videoId') || '';
+
+    setVideoTitle(videoTitle);
+    setVideoDescription(videoDescription);
+    setChannel({
+      name: channelName,
+      avatar: channelAvatar,
+    });
+    setViews(views);
+    setVideoId(videoId);
+  }, [searchParams]);
 
   const toggleEditor = () => {
     setIsEditorOpen(!isEditorOpen);
@@ -52,7 +72,7 @@ export default function Page() {
         <div className={`aspect-video w-full rounded-lg overflow-hidden shadow-lg ${isEditorOpen ? 'w-1/2' : 'w-full'}`}>
           <iframe
             className="w-full h-full shadow-lg"
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ" // Replace with your YouTube video ID
+            src={`https://www.youtube.com/embed/${videoId}`} // Replace with your YouTube video ID
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -63,7 +83,7 @@ export default function Page() {
         <h1 className="text-2xl font-bold mt-6">{videoTitle}</h1>
 
         {/* Video Stats (Views) */}
-        <p className="text-sm text-gray-500 mt-2">{views}</p>
+        <p className="text-sm text-gray-500 mt-2">{views} views</p>
 
         {/* Channel Info */}
         <div className="flex items-center mt-4">
