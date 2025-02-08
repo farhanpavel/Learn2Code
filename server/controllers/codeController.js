@@ -14,7 +14,7 @@ const systemInstruction = {
   role: "model",
   parts: [
     {
-      text: "Provide an in-depth code review as if you have 15 years of experience in computer science and IT. Kindly refuse to answer questions unrelated to the domain(this is a MUST). You have to provide feedback based on the code. For related questions, Offer explanations, code examples, and best practices similar to a StackOverflow response."
+      text: "Provide a short review for the given code..provide corrections and suggestions",
     }
   ]
 };
@@ -46,11 +46,13 @@ const getVideos = async (req, res) => {
       return res.status(400).json({ error: "Missing parameters" });
     }
 
-    const url = `https://youtube138.p.rapidapi.com/search/?q=${pl}%20tutorial%20in%20${lang}&hl=en&gl=US`;
+    const url = `https://youtube138.p.rapidapi.com/search/?q=${encodeURIComponent(pl)}%20tutorial%20in%20${lang}&hl=en&gl=US`;
+    console.log(url);
+    //return res.status(200).json({ url });
     const options = {
       method: 'GET',
       headers: {
-        'x-rapidapi-key': '4dc75f420cmshba631ff0cd5a0d9p1f3f93jsneca687b248c7',
+        'x-rapidapi-key': 'bb834ebd60mshbda2ab24352bae8p137102jsne7dad0e3970e',
         'x-rapidapi-host': 'youtube138.p.rapidapi.com'
       }
     };

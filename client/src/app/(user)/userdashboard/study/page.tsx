@@ -24,9 +24,11 @@ export default function Page() {
     const fetchVideos = async () => {
         setLoading(true);
         try {
-        const response = await fetch(`${url}/api/get-videos?pl=${position.toLowerCase()}&lang=${lang.toLowerCase()}`);
+        const requestUrl = `${url}/api/get-videos?pl=${encodeURIComponent(position.toLowerCase())}&lang=${encodeURIComponent(lang.toLowerCase())}`
+        console.log(requestUrl);
+        const response = await fetch(requestUrl);
         const data = await response.json();
-        setVideos(data.contents);
+        setVideos(data.contents.filter((item:any) => item.video.title.toLowerCase().includes(position.toLowerCase())));
         console.log(data.contents);
         } catch (error) {
         console.error('Error fetching videos:', error);
