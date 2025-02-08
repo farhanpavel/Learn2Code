@@ -17,11 +17,11 @@ const getGeneratedPlan = async (req, res) => {
     }
 
     // Adjusted prompt to include embedded YouTube videos
-    const inputPrompt = `Give me a roadmap for ${query} at the ${level} level. 
+    const inputPrompt = `Give me a roadmap for ${query} at the ${level} level in 14 days. 
     Return a JSON object with:
     - title: The title of the entire roadmap.
     - description: A brief description of the roadmap.
-    - steps: An array of objects containing:
+    - steps: An array of steps for each day (total 14 objects in the array) objects containing:
       - step: A specific learning step.
       - time: The estimated time to complete the step in days (for absolute beginners).
       - difficulty: The difficulty level (Beginner, Intermediate, Advanced).
