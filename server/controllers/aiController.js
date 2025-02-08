@@ -23,7 +23,7 @@ const getPdfAnalysis = async (req, res) => {
         .json({ error: "PDF text and selected line are required." });
     }
 
-    const inputPrompt = `I will give you all the text from a PDF, and with that, I will provide a line from the PDF that I cannot understand. Now you need to tell me what this line actually means according to the context of the PDF also give me ans in 1 or 2 line .
+    const inputPrompt = `I will give you all the text from a PDF, and with that, I will provide a line from the PDF that I cannot understand. Now you need to tell me what this line actually means according to the context of the PDF also give me ans in 4 line .
 PDF Text: ${fullPdfText}
 Selected Line: ${selectedLine}`;
 
