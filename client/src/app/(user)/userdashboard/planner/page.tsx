@@ -31,9 +31,20 @@ export interface Result {
   description: string;
   steps: Steps[];
   _id?: string;
+  title: string;
+  description: string;
+  steps: Steps[];
+  _id?: string;
+  level?: string;
 }
 
 export interface Steps {
+  step: string;
+  difficulty: string;
+  time: number;
+  reference_links?: ReferenceLink[];
+  _id?: string;
+  status?: string;
   step: string;
   difficulty: string;
   time: number;
@@ -129,6 +140,10 @@ const PlannerPage = () => {
         title: "Planner created successfully",
         description: "Your planner has been created successfully",
       });
+      fetchAllPlanners();
+      setplan(null);
+      setquery("");
+
       // Handle the successful creation response
     } catch (err) {
       console.error("Error creating planner:", err);
@@ -143,7 +158,7 @@ const PlannerPage = () => {
   return (
     <div>
       <div className="flex items-center justify-center py-10 flex-col">
-        <p className="text-center font-semibold text-teal-700 text-3xl">
+        <p className="text-center font-semibold text-green-800 text-3xl">
           Generate a Plan
         </p>
         <div className="flex items-center gap-1 mt-5">
@@ -154,7 +169,7 @@ const PlannerPage = () => {
             onChange={(e) => setquery(e.target.value)}
           />
           <Select onValueChange={setlevel}>
-            <SelectTrigger className="w-[180px] border-teal-700">
+            <SelectTrigger className="w-[180px] border-green-800">
               <SelectValue placeholder="Current Level" />
             </SelectTrigger>
             <SelectContent>
@@ -166,7 +181,7 @@ const PlannerPage = () => {
           <Button
             disabled={loading}
             onClick={generatePlan}
-            className="bg-teal-700 hover:bg-teal-800"
+            className="bg-green-800 hover:bg-green-800"
           >
             {loading ? (
               <Loader2 className="animate-spin mr-1" size={17} />
@@ -177,8 +192,9 @@ const PlannerPage = () => {
           </Button>
         </div>
         {loading && (
-          <p className="mt-5 text-center text-sm text-teal-500">
-            Generating a plan for you...
+          <p className="mt-5 text-center text-sm text-green-800 flex items-center">
+            <Loader2 className="animate-spin mr-2" size={17} /> Generating a
+            plan for you...
           </p>
         )}
 
@@ -188,7 +204,7 @@ const PlannerPage = () => {
               <p className="text-3xl font-semibold">{plan.result.title}</p>
               <Button
                 onClick={() => createPlanner(plan.result)}
-                className="bg-teal-700 hover:bg-teal-800"
+                className="bg-green-800 hover:bg-green-800"
               >
                 Save Plan
               </Button>
@@ -200,7 +216,13 @@ const PlannerPage = () => {
             <Accordion type="single" collapsible>
               {plan.result.steps.map((item, index) => (
                 <AccordionItem value={`item-${index}`} key={index}>
-                  <AccordionTrigger className="flex justify-end items-center">
+                  <AccordionTrigger className="flex justify-end items-center p-0">
+                    <div className="h-[60px] flex items-center relative">
+                      <p className="flex items-center z-20 justify-center h-[30px] mr-3 font-semibold text-xl w-[30px] rounded-full bg-green-800 text-white p-5">
+                        {index + 1}
+                      </p>
+                      <div className="absolute top-0 left-[20px] h-full bottom-0 w-[1px] bg-green-800"></div>
+                    </div>
                     <p className="text-sm mr-2 flex-1">{item.step}</p>
                     <div className="flex items-center">
                       <Badge
@@ -214,10 +236,7 @@ const PlannerPage = () => {
                       >
                         {item.difficulty}
                       </Badge>
-                      <Badge className="bg-teal-700 ml-2 flex items-center">
-                        <Clock size={16} className="mr-1" />
-                        {item.time} days
-                      </Badge>
+                      {/* <Badge className='bg-green-800 ml-2 flex items-center'><Clock size={16} className='mr-1' />{item.time} days</Badge> */}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
@@ -261,27 +280,37 @@ const PlannerPage = () => {
           <div className="m-10">
             <p className="text-3xl text-tel-700 font-semibold">All Planners</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
-              {allPlanners.map((item, index) => (
-                <div key={index} className="bg-white shadow-md p-5 rounded-lg">
-                  <p className="text-lg font-semibold">{item.title}</p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center justify-between mt-3">
-                    <Badge className="bg-teal-700">
-                      {item.steps.length} Steps
-                    </Badge>
-                    <Link
-                      href={`/userdashboard/planner/${item._id}`}
-                      className={buttonVariants({
-                        className: "bg-teal-700 hover:bg-teal-800",
-                      })}
-                    >
-                      <Play size={15} className="mr-1" /> Resume
-                    </Link>
+              {allPlanners
+                .slice(0, allPlanners.length)
+                .reverse()
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white shadow-md p-5 rounded-lg"
+                  >
+                    <p className="text-lg font-semibold">{item.title}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      {item.description}
+                    </p>
+                    <div className="flex items-center justify-between mt-3">
+                      <Badge className="bg-green-800">
+                        {
+                          item.steps.filter((v) => v.status == "Not Started")
+                            .length
+                        }{" "}
+                        Days Left
+                      </Badge>
+                      <Link
+                        href={`/userdashboard/planner/${item._id}`}
+                        className={buttonVariants({
+                          className: "bg-green-800 hover:bg-green-800",
+                        })}
+                      >
+                        <Play size={15} className="mr-1" /> Resume
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         )}

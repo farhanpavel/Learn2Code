@@ -2,19 +2,20 @@
 import { url } from '@/components/Url/page'
 import { useParams, useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { Result } from '../page'
+import { Button } from '@/components/ui/button'
+import { Trash2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 const PlannerPageSingle = () => {
-    const {id} = useParams()
-    const router = useRouter()
+  const { id } = useParams();
+  const router = useRouter();
 
-    const [query, setQuery] = useState('');
-    const [level, setLevel] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [plan, setPlan] = useState(null);
-    const [allPlanners, setAllPlanners] = useState([]);
-    const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [plan, setPlan] = useState<Result | null>(null);
+  const [error, setError] = useState('');
 
-    // 📌 Get a Single Planner by ID
+  // 📌 Get a Single Planner by ID
   const getPlannerById = async () => {
     setLoading(true);
     setError('');
@@ -35,7 +36,7 @@ const PlannerPageSingle = () => {
   };
 
   // 📌 Start a Step
-  const startStep = async (stepId:string) => {
+  const startStep = async (stepId: string) => {
     setLoading(true);
     setError('');
     try {
@@ -57,7 +58,7 @@ const PlannerPageSingle = () => {
   };
 
   // 📌 Complete a Step
-  const completeStep = async (stepId:string) => {
+  const completeStep = async (stepId: string) => {
     setLoading(true);
     setError('');
     try {
@@ -88,7 +89,7 @@ const PlannerPageSingle = () => {
       });
       if (res.ok) {
         console.log('Planner deleted');
-        router.back()
+        router.back();
       } else {
         setError('Failed to delete planner');
       }
@@ -103,10 +104,57 @@ const PlannerPageSingle = () => {
     getPlannerById();
   }, []);
 
-
   return (
-    <div>PlannerPageSingle</div>
-  )
-}
+    <div className="p-4 px-10">
+      {loading && <p className="text-center text-blue-500">Loading...</p>}
+      {error && <p className="text-red-500 text-center">{error}</p>}
 
-export default PlannerPageSingle
+      {plan && (
+        <div className="px-10">
+          <h2 className="text-2xl text-green-800 font-bold">{plan.title}</h2>
+          <p className='text-gray-600 text-sm mt-5'>{plan.description}</p>
+          <p className='text-sm mt-3'><strong className='mr-2'>Level:</strong>  
+          <Badge className={plan.level === 'Beginner' ? 'bg-green-500' : plan.level === 'Intermediate' ? 'bg-yellow-600' : 'bg-red-500'}>{plan.level}</Badge></p>
+          <h3 className="font-semibold mt-10 text-green-800">Progress</h3>
+
+          <div className="steps-list">
+            {plan.steps.map((step,index) => (
+              <div key={step._id} className="step-card p-4 my-2 border rounded-lg">
+                <p><strong>Day {index+1}:</strong> {step.step}</p>
+                <p><strong>Difficulty:</strong> {step.difficulty}</p>
+                <p><strong>Status:</strong> {step.status}</p>
+                {step.status === 'Not Started' && (
+                  <button
+                    onClick={() => startStep(String(step._id))}
+                    className="bg-blue-500 text-white p-2 rounded mt-2"
+                  >
+                    Start Step
+                  </button>
+                )}
+                {step.status === 'In Progress' && (
+                  <button
+                    onClick={() => completeStep(String(step._id))}
+                    className="bg-green-500 text-white p-2 rounded mt-2"
+                  >
+                    Complete Step
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+
+            <div className="flex justify-end">
+          <Button
+            onClick={deletePlanner}
+            variant="destructive"
+          >
+            <Trash2 size={17} className="mr-1"/> Delete
+          </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PlannerPageSingle;
