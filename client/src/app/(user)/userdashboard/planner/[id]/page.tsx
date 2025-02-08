@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { Result } from '../page'
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 const PlannerPageSingle = () => {
   const { id } = useParams();
@@ -104,21 +105,22 @@ const PlannerPageSingle = () => {
   }, []);
 
   return (
-    <div className="p-4">
+    <div className="p-4 px-10">
       {loading && <p className="text-center text-blue-500">Loading...</p>}
       {error && <p className="text-red-500 text-center">{error}</p>}
 
       {plan && (
-        <div className="planner-details">
-          <h2 className="text-xl font-bold">{plan.title}</h2>
-          <p>{plan.description}</p>
-          <p><strong>Level:</strong> {plan.level}</p>
-          <h3 className="text-lg font-semibold">Steps</h3>
+        <div className="px-10">
+          <h2 className="text-2xl text-green-800 font-bold">{plan.title}</h2>
+          <p className='text-gray-600 text-sm mt-5'>{plan.description}</p>
+          <p className='text-sm mt-3'><strong className='mr-2'>Level:</strong>  
+          <Badge className={plan.level === 'Beginner' ? 'bg-green-500' : plan.level === 'Intermediate' ? 'bg-yellow-600' : 'bg-red-500'}>{plan.level}</Badge></p>
+          <h3 className="font-semibold mt-10 text-green-800">Progress</h3>
 
           <div className="steps-list">
-            {plan.steps.map((step) => (
+            {plan.steps.map((step,index) => (
               <div key={step._id} className="step-card p-4 my-2 border rounded-lg">
-                <p><strong>Step:</strong> {step.step}</p>
+                <p><strong>Day {index+1}:</strong> {step.step}</p>
                 <p><strong>Difficulty:</strong> {step.difficulty}</p>
                 <p><strong>Status:</strong> {step.status}</p>
                 {step.status === 'Not Started' && (

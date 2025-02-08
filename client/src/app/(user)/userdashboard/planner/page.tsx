@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { url } from '@/components/Url/page'
 import { toast } from '@/hooks/use-toast'
+import { get } from 'http'
 import { Clock, Loader2, Play, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
@@ -123,6 +124,10 @@ const createPlanner = async (payload:Result) => {
       title: 'Planner created successfully',
       description: 'Your planner has been created successfully',
     })
+    fetchAllPlanners();
+    setplan(null);
+    setquery('');
+    
     // Handle the successful creation response
   } catch (err) {
     console.error('Error creating planner:', err);
@@ -157,7 +162,7 @@ const createPlanner = async (payload:Result) => {
             {loading ? <Loader2 className='animate-spin mr-1' size={17} /> : <Sparkles className='mr-1' size={17} />} Generate
           </Button>
         </div>
-        {loading && <p className='mt-5 text-center text-sm text-green-500'>Generating a plan for you...</p>}
+        {loading && <p className='mt-5 text-center text-sm text-green-800 flex items-center'><Loader2 className='animate-spin mr-2' size={17}/> Generating a plan for you...</p>}
 
         {plan?.result&&plan?.result?.steps?.length > 0 && (
           <div className='mt-5 w-full max-w-3xl'>
@@ -170,16 +175,17 @@ const createPlanner = async (payload:Result) => {
             <Accordion type="single" collapsible>
               {plan.result.steps.map((item, index) => (
                 <AccordionItem value={`item-${index}`} key={index}>
-                  <AccordionTrigger className='flex justify-end items-center'>
-                    <div>
-                      <p className='flex items-center justify-center rounded-full bg-green-800 text-white p-5'>{index+1}</p> 
+                  <AccordionTrigger className='flex justify-end items-center p-0'>
+                    <div className='h-[60px] flex items-center relative'>
+                      <p className='flex items-center z-20 justify-center h-[30px] mr-3 font-semibold text-xl w-[30px] rounded-full bg-green-800 text-white p-5'>{index+1}</p> 
+                      <div className="absolute top-0 left-[20px] h-full bottom-0 w-[1px] bg-green-800"></div>
                     </div>
                     <p className='text-sm mr-2 flex-1'>{item.step}</p>
                     <div className='flex items-center'>
                       <Badge
                         className={item.difficulty === 'Beginner' ? 'bg-green-500' : item.difficulty === 'Intermediate' ? 'bg-yellow-600' : 'bg-red-500'}
                       >{item.difficulty}</Badge>
-                      <Badge className='bg-green-800 ml-2 flex items-center'><Clock size={16} className='mr-1' />{item.time} days</Badge>
+                      {/* <Badge className='bg-green-800 ml-2 flex items-center'><Clock size={16} className='mr-1' />{item.time} days</Badge> */}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
@@ -215,12 +221,12 @@ const createPlanner = async (payload:Result) => {
           <div className='m-10'>
             <p className='text-3xl text-tel-700 font-semibold'>All Planners</p>
             <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5'>
-              {allPlanners.map((item, index) => (
+              {allPlanners.slice(0,allPlanners.length).reverse().map((item, index) => (
                 <div key={index} className='bg-white shadow-md p-5 rounded-lg'>
                   <p className='text-lg font-semibold'>{item.title}</p>
                   <p className='text-xs text-gray-500 mt-2'>{item.description}</p>
                   <div className='flex items-center justify-between mt-3'>
-                    <Badge className='bg-green-800'>{item.steps.length} Steps</Badge>
+                    <Badge className='bg-green-800'>{item.steps.filter((v)=>v.status=="Not Started").length} Days Left</Badge>
                     <Link href={`/userdashboard/planner/${item._id}`} className={buttonVariants({className:'bg-green-800 hover:bg-green-800'})}><Play size={15} className='mr-1'/> Resume</Link>
                   </div>
                 </div>
