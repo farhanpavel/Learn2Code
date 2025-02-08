@@ -24,23 +24,26 @@ const CODE_SNIPPETS = {
 const LANGUAGE_VERSIONS = {
   python: "3.10.0",
   csharp: "6.12.0",
-  php: "8.2.3", 
+  php: "8.2.3",
   java: "15.0.2",
   typescript: "5.0.3",
-  javascript: "18.15.0"
+  javascript: "18.15.0",
 };
 
 const CodeEditor: React.FC<CodeEditorProps> = () => {
   const editorRef = useRef<any>(null);
   const [value, setValue] = useState<string>("");
-  const [language, setLanguage] = useState<keyof typeof LANGUAGE_VERSIONS>("javascript");
-  const [activeTab, setActiveTab] = useState<"Editor" | "Output" | "Review">("Editor");
+  const [language, setLanguage] =
+    useState<keyof typeof LANGUAGE_VERSIONS>("javascript");
+  const [activeTab, setActiveTab] = useState<"Editor" | "Output" | "Review">(
+    "Editor"
+  );
   const [output, setOutput] = useState<string[]>([]);
   const [isError, setIsError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [reviewLoading, setReviewLoading] = useState<boolean>(false)
+  const [reviewLoading, setReviewLoading] = useState<boolean>(false);
   const [review, setReview] = useState<string>("");
-  const [lastSubmission, setLastSubmission] = useState<string>('');
+  const [lastSubmission, setLastSubmission] = useState<string>("");
 
   const onMount = (editor: any) => {
     editorRef.current = editor;
@@ -52,7 +55,10 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
     setValue(CODE_SNIPPETS[language]);
   };
 
-  const executeCode = async (language: keyof typeof LANGUAGE_VERSIONS, sourceCode: string) => {
+  const executeCode = async (
+    language: keyof typeof LANGUAGE_VERSIONS,
+    sourceCode: string
+  ) => {
     try {
       const response = await fetch("https://emkc.org/api/v2/piston/execute", {
         method: "POST",
@@ -79,10 +85,10 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
       throw error;
     }
   };
-  
+
   const generateReview = async (code: string) => {
     try {
-      setReviewLoading(true)
+      setReviewLoading(true);
       const response = await fetch(`${url}/api/code-review`, {
         method: "POST",
         headers: {
@@ -93,13 +99,13 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
           language: language,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-  
+
       const data = await response.json();
-      setReviewLoading(false)
+      setReviewLoading(false);
       return data.result;
     } catch (error) {
       console.error("Error generating review:", error);
@@ -131,7 +137,7 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
 
   const handleGetReview = async () => {
     const code = getCode();
-    setLastSubmission(code)
+    setLastSubmission(code);
     console.log("Fetched Code:", code);
     const reviewText = await generateReview(code);
     console.log("Review Text:", reviewText);
@@ -165,7 +171,10 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
     resizer.addEventListener("mousedown", handleMouseDown as EventListener);
 
     return () => {
-      resizer.removeEventListener("mousedown", handleMouseDown as EventListener);
+      resizer.removeEventListener(
+        "mousedown",
+        handleMouseDown as EventListener
+      );
     };
   }, []);
 
@@ -177,27 +186,42 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
           <div>
             <div className="flex -space-x-px">
               <Button
-          className={`rounded-r-none focus:z-10 hover:bg-green-300 ${activeTab === "Editor" ? "bg-green-800 text-white" : "bg-white text-black"}`}
-          onClick={() => setActiveTab("Editor")}
+                className={`rounded-r-none focus:z-10 hover:bg-green-300 ${
+                  activeTab === "Editor"
+                    ? "bg-green-800 text-white"
+                    : "bg-white text-black"
+                }`}
+                onClick={() => setActiveTab("Editor")}
               >
-          Editor
+                Editor
               </Button>
               <Button
-          className={`rounded-none focus:z-10 hover:bg-green-300 ${activeTab === "Output" ? "bg-green-800 text-white" : "bg-white text-black"}`}
-          onClick={() => setActiveTab("Output")}
+                className={`rounded-none focus:z-10 hover:bg-green-300 ${
+                  activeTab === "Output"
+                    ? "bg-green-800 text-white"
+                    : "bg-white text-black"
+                }`}
+                onClick={() => setActiveTab("Output")}
               >
-          Output
+                Output
               </Button>
               <Button
-          className={`rounded-l-none focus:z-10 hover:bg-green-300 ${activeTab === "Review" ? "bg-green-800 text-white" : "bg-white text-black"}`}
-          onClick={() => {
-            if(getCode()!==lastSubmission)
-            handleGetReview()
-            else setActiveTab('Review')
-          }}
-          disabled={reviewLoading}
+                className={`rounded-l-none focus:z-10 hover:bg-green-300 ${
+                  activeTab === "Review"
+                    ? "bg-green-800 text-white"
+                    : "bg-white text-black"
+                }`}
+                onClick={() => {
+                  if (getCode() !== lastSubmission) handleGetReview();
+                  else setActiveTab("Review");
+                }}
+                disabled={reviewLoading}
               >
-          {reviewLoading ? <Spinner size="sm" className="bg-black" /> : "Review"}
+                {reviewLoading ? (
+                  <Spinner size="sm" className="bg-black" />
+                ) : (
+                  "Review"
+                )}
               </Button>
             </div>
           </div>
@@ -208,7 +232,13 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
             disabled={loading}
             className="flex items-center gap-2 bg-green-800 p-1 rounded w-12 text-white text-sm"
           >
-            {loading ? <Spinner size="sm" className="bg-white" /> : <><FaPlay /></>}
+            {loading ? (
+              <Spinner size="sm" className="bg-white" />
+            ) : (
+              <>
+                <FaPlay />
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -230,7 +260,9 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
       ) : activeTab === "Output" ? (
         <Output output={output} isError={isError} />
       ) : (
-        <Review getCode={getCode} review={review} />
+        <div className="h-[500px] overflow-scroll">
+          <Review getCode={getCode} review={review} />
+        </div>
       )}
     </div>
   );

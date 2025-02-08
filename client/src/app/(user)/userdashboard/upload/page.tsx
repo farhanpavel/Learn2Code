@@ -66,7 +66,7 @@ export default function Page() {
   });
   const [dataAll, setData] = useState<Book[]>([]);
   const [file, setFile] = useState<File | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false); // <-- Add this state
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBook({ ...book, [e.target.name]: e.target.value });
