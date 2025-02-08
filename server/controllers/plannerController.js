@@ -7,17 +7,17 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-pro-exp-02-05" });
 
 const getGeneratedPlan = async (req, res) => {
   try {
-    const { query, level } = req.body;
+    const { query } = req.body;
 
     // Validate input
-    if (!query || !level) {
+    if (!query) {
       return res
         .status(400)
         .json({ error: "Please enter a valid query and level to get a plan." });
     }
 
     // Adjusted prompt to include embedded YouTube videos
-    const inputPrompt = `Give me a roadmap for ${query} at the ${level} level in 14 days. 
+    const inputPrompt = `Give me a roadmap for ${query} at the  level in 14 days. 
     Return a JSON object with:
     - title: The title of the entire roadmap.
     - description: A brief description of the roadmap.
@@ -54,7 +54,10 @@ const getGeneratedPlan = async (req, res) => {
       jsonResponse.steps.forEach((step) => {
         if (step.reference_links && Array.isArray(step.reference_links)) {
           step.reference_links.forEach((link) => {
-            if (link.type === "video" && link.url.includes("youtube.com/watch?v=")) {
+            if (
+              link.type === "video" &&
+              link.url.includes("youtube.com/watch?v=")
+            ) {
               const videoId = link.url.split("v=")[1].split("&")[0]; // Extract YouTube video ID
               link.embed_url = `https://www.youtube.com/embed/${videoId}`;
             }
@@ -80,24 +83,27 @@ const createPlanner = async (req, res) => {
 
     // Check if the level is provided
     if (!level) {
-      return res.status(400).json({ error: 'Level is required to create a planner' });
+      return res
+        .status(400)
+        .json({ error: "Level is required to create a planner" });
     }
 
     const newPlanner = new Planner({
       title,
       description,
-      level,  // Make sure this is coming from the request body
+      level, // Make sure this is coming from the request body
       steps,
     });
 
     await newPlanner.save();
-    res.status(201).json({ message: 'Planner created successfully!', planner: newPlanner });
+    res
+      .status(201)
+      .json({ message: "Planner created successfully!", planner: newPlanner });
   } catch (error) {
-    console.error('Error creating planner:', error);
-    res.status(500).json({ error: 'Failed to create planner.' });
+    console.error("Error creating planner:", error);
+    res.status(500).json({ error: "Failed to create planner." });
   }
 };
-
 
 // 📌 Get All Planners
 const getAllPlanners = async (req, res) => {
@@ -136,13 +142,16 @@ const startStep = async (req, res) => {
         $set: {
           "steps.$.status": "In Progress",
           "steps.$.startDate": new Date(),
-          "steps.$.endDate": new Date(new Date().setDate(new Date().getDate() + 7)) // Default 7 days
-        }
+          "steps.$.endDate": new Date(
+            new Date().setDate(new Date().getDate() + 7)
+          ), // Default 7 days
+        },
       },
       { new: true }
     );
 
-    if (!planner) return res.status(404).json({ error: "Planner or step not found!" });
+    if (!planner)
+      return res.status(404).json({ error: "Planner or step not found!" });
 
     res.status(200).json({ message: "Step started successfully!", planner });
   } catch (error) {
@@ -162,7 +171,8 @@ const completeStep = async (req, res) => {
       { new: true }
     );
 
-    if (!planner) return res.status(404).json({ error: "Planner or step not found!" });
+    if (!planner)
+      return res.status(404).json({ error: "Planner or step not found!" });
 
     res.status(200).json({ message: "Step completed successfully!", planner });
   } catch (error) {
@@ -187,9 +197,12 @@ const deletePlanner = async (req, res) => {
   }
 };
 
-module.exports = { getGeneratedPlan, createPlanner,
+module.exports = {
+  getGeneratedPlan,
+  createPlanner,
   getAllPlanners,
   getPlannerById,
   startStep,
   completeStep,
-  deletePlanner };
+  deletePlanner,
+};

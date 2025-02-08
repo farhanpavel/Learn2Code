@@ -14,15 +14,15 @@ const systemInstruction = {
   role: "model",
   parts: [
     {
-      text: "Provide an in-depth code review as if you have 15 years of experience in computer science and IT. Kindly refuse to answer questions unrelated to the domain(this is a MUST). You have to provide feedback based on the code. For related questions, Offer explanations, code examples, and best practices similar to a StackOverflow response."
-    }
-  ]
+      text: "Provide an in-depth code review as if you have 15 years of experience in computer science and IT. Kindly refuse to answer questions unrelated to the domain(this is a MUST). You have to provide feedback based on the code. For related questions, Offer explanations, code examples, and best practices similar to a StackOverflow response.",
+    },
+  ],
 };
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
   model: "gemini-2.0-pro-exp-02-05",
   generationConfig: generationConfig,
-  systemInstruction: systemInstruction
+  systemInstruction: systemInstruction,
 });
 
 const getCodeReview = async (req, res) => {
@@ -42,17 +42,17 @@ const getCodeReview = async (req, res) => {
 const getVideos = async (req, res) => {
   try {
     const { pl, lang } = req.query;
-    if(!pl || !lang) {
+    if (!pl || !lang) {
       return res.status(400).json({ error: "Missing parameters" });
     }
 
     const url = `https://youtube138.p.rapidapi.com/search/?q=${pl}%20tutorial%20in%20${lang}&hl=en&gl=US`;
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'x-rapidapi-key': '4dc75f420cmshba631ff0cd5a0d9p1f3f93jsneca687b248c7',
-        'x-rapidapi-host': 'youtube138.p.rapidapi.com'
-      }
+        "x-rapidapi-key": "6dc742acb6mshd96bdc48a0f940ep156ad8jsn0708f30de3d3",
+        "x-rapidapi-host": "youtube138.p.rapidapi.com",
+      },
     };
     const response = await fetch(url, options);
     const result = await response.json();
@@ -62,6 +62,6 @@ const getVideos = async (req, res) => {
     console.error("Error generating response from AI:", error);
     res.status(500).json({ error: "Failed to generate response from AI." });
   }
-}
+};
 
 module.exports = { getCodeReview, getVideos };
