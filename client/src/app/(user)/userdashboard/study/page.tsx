@@ -20,23 +20,30 @@ export default function Page() {
     const [loading, setLoading] = React.useState(false)
     const [lang, setLang] = React.useState("Bangla")
 
-    useEffect(() => {
-        const fetchVideos = async () => {
-            setLoading(true);
-            try {
-            const response = await fetch(`${url}/api/get-videos?pl=${position.toLowerCase()}&lang=${lang.toLowerCase()}`);
-            const data = await response.json();
-            setVideos(data.contents);
-            console.log(data.contents);
-            } catch (error) {
-            console.error('Error fetching videos:', error);
-            } finally {
-            setLoading(false);
-            }
-        };
 
+    const fetchVideos = async () => {
+        setLoading(true);
+        try {
+        const response = await fetch(`${url}/api/get-videos?pl=${position.toLowerCase()}&lang=${lang.toLowerCase()}`);
+        const data = await response.json();
+        setVideos(data.contents);
+        console.log(data.contents);
+        } catch (error) {
+        console.error('Error fetching videos:', error);
+        } finally {
+        setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchVideos();
     }, [])
+
+    useEffect(() => {
+        fetchVideos();
+    }, [position, lang])
+
+    
 
     if(loading)
     return (
@@ -66,7 +73,12 @@ export default function Page() {
                         <div className="flex -space-x-px">
                             <Button
                                 className={`rounded-r-none focus:z-10 hover:bg-green-300 ${lang === "Bangla" ? "bg-green-800 text-white" : "bg-white text-black"}`}
-                                onClick={() => setLang("Bangla")}
+                                onClick={() => 
+                                {
+                                    setLang("Bangla")
+                                    fetchVideos()
+                                }
+                                }
                             >
                                 Bangla
                             </Button>
