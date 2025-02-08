@@ -21,42 +21,7 @@ import { toast } from "@/hooks/use-toast";
 import { Clock, Loader2, Play, Sparkles } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-
-export interface Root {
-  result: Result;
-}
-
-export interface Result {
-  title: string;
-  description: string;
-  steps: Steps[];
-  _id?: string;
-  title: string;
-  description: string;
-  steps: Steps[];
-  _id?: string;
-  level?: string;
-}
-
-export interface Steps {
-  step: string;
-  difficulty: string;
-  time: number;
-  reference_links?: ReferenceLink[];
-  _id?: string;
-  status?: string;
-  step: string;
-  difficulty: string;
-  time: number;
-  reference_links?: ReferenceLink[];
-}
-
-export interface ReferenceLink {
-  title: string;
-  url: string;
-  type: string;
-  embed_url?: string;
-}
+import { GoProjectRoadmap } from "react-icons/go";
 
 const PlannerPage = () => {
   const [query, setquery] = useState<string>("");
@@ -106,12 +71,11 @@ const PlannerPage = () => {
     setloading(false);
   };
 
-  // Assuming 'level' and other fields are coming from the client-side input
   const createPlanner = async (payload: Result) => {
     const newPlannerData = {
       title: payload.title,
       description: payload.description,
-      level: level, // Make sure level is included here
+      level: level,
       steps: payload.steps.map((step) => ({
         step: step.step,
         difficulty: step.difficulty,
@@ -143,8 +107,6 @@ const PlannerPage = () => {
       fetchAllPlanners();
       setplan(null);
       setquery("");
-
-      // Handle the successful creation response
     } catch (err) {
       console.error("Error creating planner:", err);
     }
@@ -156,75 +118,67 @@ const PlannerPage = () => {
   }, []);
 
   return (
-    <div>
-      <div className="flex items-center justify-center py-10 flex-col">
-        <p className="text-center font-semibold text-green-800 text-3xl">
-          Generate a Plan
-        </p>
-        <div className="flex items-center gap-1 mt-5">
+    <div className="p-9 space-y-2">
+      <div className="flex gap-x-2 items-center text-green-600">
+        <GoProjectRoadmap className="text-3xl" />
+        <h1 className="text-2xl font-bold">Roadmap</h1>
+      </div>
+      <p className="text-xs text-[#4a4a4a] border-[#d1cece] border-b-[2px] pb-4">
+        Create a perfect roadmap for your learning
+      </p>
+      <div className="py-10 space-y-2 border-[1px] rounded-lg p-8 border-gray-300">
+        <h1 className="font-semibold text-green-600 text-2xl">
+          Create Your Learning Path
+        </h1>
+        <p className="text-[#4a4a4a] text-xs">What do you want to learn?</p>
+        <div className="space-y-4 mt-5">
           <Input
             type="text"
-            placeholder="What do you want to learn?"
             value={query}
             onChange={(e) => setquery(e.target.value)}
+            className="bg-white w-1/2"
           />
-          <Select onValueChange={setlevel}>
-            <SelectTrigger className="w-[180px] border-green-800">
-              <SelectValue placeholder="Current Level" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Beginner">Beginner</SelectItem>
-              <SelectItem value="Intermediate">Intermediate</SelectItem>
-              <SelectItem value="Advanced">Advanced</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button
-            disabled={loading}
-            onClick={generatePlan}
-            className="bg-green-800 hover:bg-green-800"
-          >
-            {loading ? (
-              <Loader2 className="animate-spin mr-1" size={17} />
-            ) : (
-              <Sparkles className="mr-1" size={17} />
-            )}{" "}
-            Generate
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              disabled={loading}
+              onClick={generatePlan}
+              className="bg-green-800 hover:bg-green-600 w-1/2"
+            >
+              {loading ? (
+                <Loader2 className="animate-spin mr-1" size={17} />
+              ) : (
+                <Sparkles className="mr-1" size={17} />
+              )}
+              Generate
+            </Button>
+          </div>
         </div>
-        {loading && (
-          <p className="mt-5 text-center text-sm text-green-800 flex items-center">
-            <Loader2 className="animate-spin mr-2" size={17} /> Generating a
-            plan for you...
-          </p>
-        )}
 
         {plan?.result && plan?.result?.steps?.length > 0 && (
-          <div className="mt-5 w-full max-w-3xl">
+          <div className=" w-full max-w-3xl">
             <div className="flex items-center justify-between">
-              <p className="text-3xl font-semibold">{plan.result.title}</p>
-              <Button
-                onClick={() => createPlanner(plan.result)}
-                className="bg-green-800 hover:bg-green-800"
-              >
-                Save Plan
-              </Button>
+              <p className="text-lg font-semibold mt-5">{plan.result.title}</p>
             </div>
 
-            <p className="text-sm text-gray-500 mt-2 mb-5">
+            <p className="text-xs  text-gray-500 mt-2 mb-5">
               {plan.result.description}
             </p>
             <Accordion type="single" collapsible>
               {plan.result.steps.map((item, index) => (
-                <AccordionItem value={`item-${index}`} key={index}>
-                  <AccordionTrigger className="flex justify-end items-center p-0">
+                <AccordionItem
+                  value={`item-${index}`}
+                  key={index}
+                  className="border-0"
+                >
+                  <AccordionTrigger className="flex justify-end items-center p-0 ">
                     <div className="h-[60px] flex items-center relative">
                       <p className="flex items-center z-20 justify-center h-[30px] mr-3 font-semibold text-xl w-[30px] rounded-full bg-green-800 text-white p-5">
                         {index + 1}
                       </p>
-                      <div className="absolute top-0 left-[20px] h-full bottom-0 w-[1px] bg-green-800"></div>
+                      <div className="absolute top-0 left-[20px] h-full bottom-0 w-[3px] bg-green-800"></div>
                     </div>
                     <p className="text-sm mr-2 flex-1">{item.step}</p>
-                    <div className="flex items-center">
+                    <div className="flex items-center mx-2">
                       <Badge
                         className={
                           item.difficulty === "Beginner"
@@ -236,7 +190,6 @@ const PlannerPage = () => {
                       >
                         {item.difficulty}
                       </Badge>
-                      {/* <Badge className='bg-green-800 ml-2 flex items-center'><Clock size={16} className='mr-1' />{item.time} days</Badge> */}
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
@@ -262,7 +215,10 @@ const PlannerPage = () => {
                             className="text-xs w-[400px]"
                             rel="noreferrer"
                           >
-                            <Badge>Documentation</Badge> {link.title}{" "}
+                            <Badge className="bg-green-800 text-white">
+                              Documentation
+                            </Badge>{" "}
+                            {link.title}{" "}
                             <span className="underline italic text-blue-500">
                               ({link.url})
                             </span>
@@ -274,44 +230,6 @@ const PlannerPage = () => {
                 </AccordionItem>
               ))}
             </Accordion>
-          </div>
-        )}
-        {allPlanners.length > 0 && (
-          <div className="m-10">
-            <p className="text-3xl text-tel-700 font-semibold">All Planners</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
-              {allPlanners
-                .slice(0, allPlanners.length)
-                .reverse()
-                .map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-white shadow-md p-5 rounded-lg"
-                  >
-                    <p className="text-lg font-semibold">{item.title}</p>
-                    <p className="text-xs text-gray-500 mt-2">
-                      {item.description}
-                    </p>
-                    <div className="flex items-center justify-between mt-3">
-                      <Badge className="bg-green-800">
-                        {
-                          item.steps.filter((v) => v.status == "Not Started")
-                            .length
-                        }{" "}
-                        Days Left
-                      </Badge>
-                      <Link
-                        href={`/userdashboard/planner/${item._id}`}
-                        className={buttonVariants({
-                          className: "bg-green-800 hover:bg-green-800",
-                        })}
-                      >
-                        <Play size={15} className="mr-1" /> Resume
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-            </div>
           </div>
         )}
       </div>
