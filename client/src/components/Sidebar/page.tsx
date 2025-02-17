@@ -8,7 +8,7 @@ import { FaHome } from "react-icons/fa";
 import { FaBookOpen } from "react-icons/fa";
 import { IoBulbOutline } from "react-icons/io5";
 import { AiOutlineRetweet } from "react-icons/ai";
-import { LuCreditCard } from "react-icons/lu";
+import { RiSpeakAiFill } from "react-icons/ri";
 import { MdOutlineUploadFile } from "react-icons/md";
 import Image from "next/image";
 import { LuLogOut } from "react-icons/lu";
@@ -35,6 +35,11 @@ const navItems: NavItem[] = [
     icon: <AiOutlineRetweet />,
   },
   { title: "Quiz", href: "/userdashboard/quiz", icon: <IoBulbOutline /> },
+  {
+    title: "Interview",
+    href: "/userdashboard/interview",
+    icon: <RiSpeakAiFill />,
+  },
 ];
 
 export default function Sidebar() {
