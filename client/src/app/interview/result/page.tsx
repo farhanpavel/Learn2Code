@@ -2,23 +2,29 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation"; // Import the useRouter hook
+import { url } from "@/components/Url/page";
 
 const InterviewEvaluationPage = () => {
   const [evaluation, setEvaluation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter(); // Initialize the router
-
   useEffect(() => {
-    // Fetch the evaluation data from the API using fetch
-    fetch("http://localhost:4000/api/data/answer")
-      .then((response) => response.json()) // Parse JSON from the response
+    // Make a POST request to store evaluation
+    fetch(`${url}/api/store-evaluation`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
       .then((data) => {
-        setEvaluation(data); // Set the evaluation data
-        setIsLoading(false); // Set loading to false once data is fetched
+        console.log("API Response:", data);
+        setEvaluation(data.data);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching evaluation data:", error);
-        setIsLoading(false); // Stop loading on error
+        setIsLoading(false);
       });
   }, []);
 

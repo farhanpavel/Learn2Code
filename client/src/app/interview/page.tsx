@@ -130,6 +130,13 @@ export default function InterviewPage() {
   };
 
   const nextQuestion = async () => {
+    // Stop the speech recognition if it is active
+    if (isMicActive && recognition) {
+      recognition.stop();
+      setIsMicActive(false);
+    }
+
+    // Stop any ongoing speech
     stopSpeaking();
 
     // Send the current response to the API
@@ -138,13 +145,13 @@ export default function InterviewPage() {
       await sendResponseToAPI(questionId, inputText);
     }
 
+    // Move to the next question or finish the interview
     if (currentQuestionIndex < questions.length - 1) {
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
       const newQuestion = questions[nextIndex].question;
       setCurrentQuestion(newQuestion);
       setTimer(120);
-      setIsMicActive(false);
       setInputText("");
       speakQuestion(newQuestion);
     } else {

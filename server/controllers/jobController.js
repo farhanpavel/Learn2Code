@@ -211,7 +211,7 @@ const evaluateAnswersWithAI = async (summary, questions) => {
 const storeEvaluationData = async (req, res) => {
   try {
     const job = await Job.findOne();
-
+    console.log(job);
     if (!job) {
       throw new Error("Job not found.");
     }
@@ -227,6 +227,7 @@ const storeEvaluationData = async (req, res) => {
       mark: evaluation.marks,
       suggestion: evaluation.suggestions,
     };
+
     await JobAnswer.deleteMany({});
     // Step 5: Save the evaluation data into the JobAnswer collection
     const newJobAnswer = new JobAnswer(evaluationData);
