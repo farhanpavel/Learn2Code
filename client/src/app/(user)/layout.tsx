@@ -7,10 +7,10 @@ export default function Landing({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="bg-[#F0F4F4] flex">
+    <div className="bg-[#F8F9FA] flex">
       <Sidebar />
       <div className="w-[90%]">{children}</div>
-      <Toaster/>
+      <Toaster />
     </div>
   );
 }

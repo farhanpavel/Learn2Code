@@ -89,7 +89,7 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="p-1 hover:bg-green-200 outline-none rounded-full hover:transition-all hover:delay-100">
+          <button className="p-1 hover:bg-black hover:text-white outline-none rounded-full hover:transition-all hover:delay-100">
             <MoreHorizontal className="h-3 w-3" />
           </button>
         </DropdownMenuTrigger>
@@ -100,7 +100,7 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => handleQuiz()}
-            className="hover:bg-green-200 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
+            className="hover:bg-green-200 hover:text-white rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
           >
             Take Quiz
           </DropdownMenuItem>
@@ -137,7 +137,7 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
 
       {loading && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <ScaleLoader color="#1dce4d" />
+          <ScaleLoader color="black" />
         </div>
       )}
     </>

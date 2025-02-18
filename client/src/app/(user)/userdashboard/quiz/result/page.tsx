@@ -61,7 +61,7 @@ export default function Page() {
     <div className="p-9">
       {isLoading ? (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <ScaleLoader color="#1dce4d" />
+          <ScaleLoader color="black" />
         </div>
       ) : (
         <>

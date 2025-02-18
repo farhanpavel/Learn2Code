@@ -186,9 +186,9 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
           <div>
             <div className="flex -space-x-px">
               <Button
-                className={`rounded-r-none focus:z-10 hover:bg-green-300 ${
+                className={`rounded-r-none focus:z-10 hover:bg-gray-300 ${
                   activeTab === "Editor"
-                    ? "bg-green-800 text-white"
+                    ? "bg-black text-white"
                     : "bg-white text-black"
                 }`}
                 onClick={() => setActiveTab("Editor")}
@@ -196,9 +196,9 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
                 Editor
               </Button>
               <Button
-                className={`rounded-none focus:z-10 hover:bg-green-300 ${
+                className={`rounded-none focus:z-10 hover:bg-gray-300 ${
                   activeTab === "Output"
-                    ? "bg-green-800 text-white"
+                    ? "bg-black text-white"
                     : "bg-white text-black"
                 }`}
                 onClick={() => setActiveTab("Output")}
@@ -206,9 +206,9 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
                 Output
               </Button>
               <Button
-                className={`rounded-l-none focus:z-10 hover:bg-green-300 ${
+                className={`rounded-l-none focus:z-10 hover:bg-gray-300 ${
                   activeTab === "Review"
-                    ? "bg-green-800 text-white"
+                    ? "bg-black text-white"
                     : "bg-white text-black"
                 }`}
                 onClick={() => {
@@ -230,7 +230,7 @@ const CodeEditor: React.FC<CodeEditorProps> = () => {
           <Button
             onClick={runCode}
             disabled={loading}
-            className="flex items-center gap-2 bg-green-800 p-1 rounded w-12 text-white text-sm"
+            className="flex items-center gap-2 bg-black p-1 rounded w-12 text-white text-sm"
           >
             {loading ? (
               <Spinner size="sm" className="bg-white" />

@@ -15,14 +15,14 @@ const systemInstruction = {
   parts: [
     {
       text: "Provide a short review for the given code..provide corrections and suggestions",
-    }
-  ]
+    },
+  ],
 };
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({
   model: "gemini-2.0-pro-exp-02-05",
   generationConfig: generationConfig,
-  systemInstruction: systemInstruction
+  systemInstruction: systemInstruction,
 });
 
 const getCodeReview = async (req, res) => {
@@ -42,19 +42,21 @@ const getCodeReview = async (req, res) => {
 const getVideos = async (req, res) => {
   try {
     const { pl, lang } = req.query;
-    if(!pl || !lang) {
+    if (!pl || !lang) {
       return res.status(400).json({ error: "Missing parameters" });
     }
 
-    const url = `https://youtube138.p.rapidapi.com/search/?q=${encodeURIComponent(pl)}%20tutorial%20in%20${lang}&hl=en&gl=US`;
+    const url = `https://youtube138.p.rapidapi.com/search/?q=${encodeURIComponent(
+      pl
+    )}%20tutorial%20in%20${lang}&hl=en&gl=US`;
     console.log(url);
     //return res.status(200).json({ url });
     const options = {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'x-rapidapi-key': 'bb834ebd60mshbda2ab24352bae8p137102jsne7dad0e3970e',
-        'x-rapidapi-host': 'youtube138.p.rapidapi.com'
-      }
+        "x-rapidapi-key": process.env.RAPID_API_KEY,
+        "x-rapidapi-host": "youtube138.p.rapidapi.com",
+      },
     };
     const response = await fetch(url, options);
     const result = await response.json();
@@ -64,6 +66,6 @@ const getVideos = async (req, res) => {
     console.error("Error generating response from AI:", error);
     res.status(500).json({ error: "Failed to generate response from AI." });
   }
-}
+};
 
 module.exports = { getCodeReview, getVideos };

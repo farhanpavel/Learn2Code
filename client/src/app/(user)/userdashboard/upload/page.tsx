@@ -140,7 +140,7 @@ export default function Page() {
   return (
     <div>
       <div className="p-9 space-y-2 ">
-        <div className="flex gap-x-2 items-center text-green-600">
+        <div className="flex gap-x-2 items-center ">
           <MdOutlineUploadFile className="text-3xl" />
           <h1 className="text-2xl font-bold">Uploads</h1>
         </div>
@@ -151,10 +151,13 @@ export default function Page() {
           <div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <button className="px-6 py-2 bg-green-800 text-white rounded-lg mt-2 flex items-center gap-x-1">
+                <Button
+                  variant={"default"}
+                  className="px-6 py-2  rounded-lg mt-2 flex items-center gap-x-1"
+                >
                   <PiUploadSimpleBold className="text-white text-sm" />
                   <p className="text-semibold text-sm font-bold"> Upload</p>
-                </button>
+                </Button>
               </DialogTrigger>
 
               <DialogContent className="sm:max-w-[425px]">
@@ -174,7 +177,7 @@ export default function Page() {
                       id="topic"
                       name="Booktopic"
                       type="text"
-                      className="col-span-3"
+                      className="col-span-3 border-black focus:ring-black"
                       onChange={handleChange}
                       required
                     />
@@ -188,7 +191,7 @@ export default function Page() {
                       id="file"
                       type="file"
                       accept="application/pdf"
-                      className="col-span-3"
+                      className="col-span-3 border-black focus:ring-black"
                       name="pdfFile"
                       onChange={handleFileChange}
                       required
@@ -196,9 +199,10 @@ export default function Page() {
                   </div>
 
                   <DialogFooter>
-                    <button
+                    <Button
                       type="submit"
-                      className="px-6 py-2 bg-green-800 text-white rounded-lg mt-2 flex items-center gap-x-1"
+                      variant={"default"}
+                      className="px-6 py-2  rounded-lg mt-2 flex items-center gap-x-1"
                       disabled={isLoading}
                     >
                       <p className="text-semibold text-sm font-bold">
@@ -212,7 +216,7 @@ export default function Page() {
                           "Upload"
                         )}
                       </p>
-                    </button>
+                    </Button>
                   </DialogFooter>
                 </form>
               </DialogContent>
@@ -222,17 +226,22 @@ export default function Page() {
             <div className="flex space-x-4 items-center mt-2">
               <Input
                 placeholder="Search by name"
-                className="max-w-sm h-[71%] text-xs"
+                className="w-[250px] border-black focus:ring-black bg-white text-xs"
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="ml-auto  h-[71%] flex items-center gap-x-2 bg-[#F2F4F4] border-[1px] border-green-700"
+                    className="border-black text-black hover:bg-[#121f21] hover:text-white"
                   >
-                    <MdViewComfy className="flex items-center" /> View
+                    <MdViewComfy className="mr-2 h-4 w-4" />
+                    View
                   </Button>
                 </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>Grid View</DropdownMenuItem>
+                  <DropdownMenuItem>List View</DropdownMenuItem>
+                </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </div>

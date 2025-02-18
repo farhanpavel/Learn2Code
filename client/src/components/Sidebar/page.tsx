@@ -1,142 +1,121 @@
 "use client";
 
-import React, { useState } from "react";
+import * as React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { usePathname, useSearchParams } from "next/navigation";
-import { FaHome } from "react-icons/fa";
-import { FaBookOpen } from "react-icons/fa";
-import { IoBulbOutline } from "react-icons/io5";
-import { AiOutlineRetweet } from "react-icons/ai";
-import { RiSpeakAiFill } from "react-icons/ri";
-import { MdOutlineUploadFile } from "react-icons/md";
+import { cn } from "@/lib/utils";
+import {
+  Home,
+  Upload,
+  BookOpen,
+  RefreshCw,
+  Lightbulb,
+  Mic,
+  LogOut,
+} from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import { LuLogOut } from "react-icons/lu";
 
 type NavItem = {
   title: string;
   href: string;
-  icon?: React.ReactNode;
+  icon: React.ReactNode;
   label?: string;
   disabled?: boolean;
 };
 
 const navItems: NavItem[] = [
-  { title: "Overview", href: "/userdashboard/overview", icon: <FaHome /> },
+  {
+    title: "Overview",
+    href: "/userdashboard/overview",
+    icon: <Home size={20} />,
+  },
   {
     title: "Uploads",
     href: "/userdashboard/upload",
-    icon: <MdOutlineUploadFile />,
+    icon: <Upload size={20} />,
   },
-  { title: "Study", href: "/userdashboard/study", icon: <FaBookOpen /> },
+  {
+    title: "Study",
+    href: "/userdashboard/study",
+    icon: <BookOpen size={20} />,
+  },
   {
     title: "Planner",
     href: "/userdashboard/planner",
-    icon: <AiOutlineRetweet />,
+    icon: <RefreshCw size={20} />,
   },
-  { title: "Quiz", href: "/userdashboard/quiz", icon: <IoBulbOutline /> },
+  { title: "Quiz", href: "/userdashboard/quiz", icon: <Lightbulb size={20} /> },
   {
     title: "Interview",
     href: "/userdashboard/interview",
-    icon: <RiSpeakAiFill />,
+    icon: <Mic size={20} />,
   },
 ];
 
 export default function Sidebar() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const path = usePathname();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const tripPlanId = searchParams.get("tripPlanId");
 
   return (
-    <div className="flex min-h-screen">
-      <nav
-        onMouseEnter={() => setIsSidebarOpen(true)}
-        onMouseLeave={() => setIsSidebarOpen(false)}
-        className={`sticky top-0 left-0  h-screen  bg-gradient-to-b from-gray-200 via-green-200 to-[#38646e] pt-4 transition-all duration-300  text-black ${
-          isSidebarOpen ? "w-64" : "w-16"
-        }`}
-      >
-        <div className="flex flex-col h-full justify-between py-4">
-          <div className="overflow-y-auto">
-            <div className="mb-5 flex justify-center items-center">
-              <Image
-                src={"/images/logo2.png"}
-                width={100}
-                height={100}
-                alt="logo"
-              />
-            </div>
-
-            <nav className="grid items-start gap-2">
-              {navItems.map((item, index) => (
-                <Link
-                  key={index}
-                  href={
-                    item.disabled
-                      ? "/"
-                      : `${item.href}${
-                          tripPlanId ? `?tripPlanId=${tripPlanId}` : ""
-                        }`
-                  }
-                  onClick={() => setIsSidebarOpen(false)}
-                  className={`group relative overflow-hidden flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    path === item.href
-                      ? "bg-green-300 text-black"
-                      : "hover:bg-green-100 hover:text-black"
-                  } ${item.disabled && "pointer-events-none opacity-60"}`}
-                >
-                  <div
-                    className={`h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 ${
-                      isSidebarOpen ? "mr-2" : ""
-                    }`}
-                  >
-                    {item.icon}
-                  </div>
-                  {isSidebarOpen && (
-                    <motion.span
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className="text-base font-semibold"
-                    >
-                      {item.title}
-                    </motion.span>
-                  )}
-                </Link>
-              ))}
-            </nav>
+    <TooltipProvider delayDuration={0}>
+      <div className="sticky top-0 left-0 h-screen w-64 border-r bg-background pt-16 flex flex-col">
+        <div className="flex h-full flex-col">
+          <div className="flex h-14 items-center justify-center border-b px-2">
+            <Image
+              src="/images/logo2.png"
+              alt="Dashboard Logo"
+              width={150}
+              height={150}
+              className="text-lg font-semibold tracking-tight"
+            />
           </div>
+          <ScrollArea className="flex-1 px-2">
+            <div className="space-y-2 py-4">
+              {navItems.map((item, index) => {
+                const href = item.disabled
+                  ? "/"
+                  : `${item.href}${
+                      tripPlanId ? `?tripPlanId=${tripPlanId}` : ""
+                    }`;
+                const isActive = pathname.startsWith(item.href);
 
-          {/* Logout Button at the End */}
-          <div className="mt-auto">
-            <Link
-              href="/logout"
-              className="group relative flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors "
-            >
-              <div
-                className={`h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 ${
-                  isSidebarOpen ? "mr-2" : ""
-                }`}
-              >
-                <LuLogOut />
-              </div>
-              {isSidebarOpen && (
-                <motion.span
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-base font-semibold"
-                >
-                  Logout
-                </motion.span>
-              )}
+                return (
+                  <Link key={index} href={href}>
+                    <Button
+                      variant={isActive ? "default" : "ghost"}
+                      className={cn(
+                        "w-full justify-start",
+                        item.disabled && "pointer-events-none opacity-60"
+                      )}
+                    >
+                      {item.icon}
+                      <span className="ml-2">{item.title}</span>
+                    </Button>
+                  </Link>
+                );
+              })}
+            </div>
+          </ScrollArea>
+          <div className="mt-auto border-t p-2">
+            <Link href="/logout">
+              <Button variant="ghost" className="w-full justify-start">
+                <LogOut size={20} className="mr-2" />
+                Logout
+              </Button>
             </Link>
           </div>
         </div>
-      </nav>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }

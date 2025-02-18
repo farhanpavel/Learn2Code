@@ -33,7 +33,7 @@ export default function DialogUploaderDemo() {
     <div>
       <div className="p-9 space-y-2">
         <div className="mb-10">
-          <div className="flex gap-x-2 items-center text-green-600">
+          <div className="flex gap-x-2 items-center text-black">
             <FaTeamspeak className="text-3xl" />
             <h1 className="text-2xl font-bold">Interview</h1>
           </div>
@@ -44,9 +44,9 @@ export default function DialogUploaderDemo() {
 
         <div className="flex justify-around">
           {/* Fundamental Level */}
-          <Card className="w-[350px] h-[350px] shadow-lg border border-red-400 hover:scale-105 transition-transform duration-300 flex flex-col">
+          <Card className="w-[300px] h-[300px] shadow-lg border border-black hover:scale-105 transition-transform duration-300 flex flex-col">
             <CardHeader>
-              <CardTitle className="text-red-600 text-xl font-bold">
+              <CardTitle className="text-black text-xl font-bold">
                 Fundamental
               </CardTitle>
               <CardDescription className="text-gray-600">
@@ -54,12 +54,12 @@ export default function DialogUploaderDemo() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center items-center flex-grow">
-              <FaMicrophone className="text-5xl text-red-600 animate-pulse" />
+              <FaMicrophone className="text-5xl text-black animate-pulse" />
             </CardContent>
             <CardFooter className="flex justify-between items-center mt-auto border-t pt-3">
-              <span className="text-sm text-gray-500">Difficulty: Easy</span>
+              <span className="text-sm text-green-800">Difficulty: Easy</span>
               <Button
-                className="bg-red-600 hover:bg-red-700"
+                className="bg-black "
                 onClick={() => handleClick("fundamental")}
               >
                 Enter
@@ -68,9 +68,9 @@ export default function DialogUploaderDemo() {
           </Card>
 
           {/* Standard Level */}
-          <Card className="w-[350px] h-[350px] shadow-lg border border-blue-400 hover:scale-105 transition-transform duration-300 flex flex-col">
+          <Card className="w-[300px] h-[300px] shadow-lg border border-black hover:scale-105 transition-transform duration-300 flex flex-col">
             <CardHeader>
-              <CardTitle className="text-blue-600 text-xl font-bold">
+              <CardTitle className="text-black text-xl font-bold">
                 Standard
               </CardTitle>
               <CardDescription className="text-gray-600">
@@ -78,12 +78,12 @@ export default function DialogUploaderDemo() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center items-center flex-grow">
-              <FaMicrophone className="text-5xl text-blue-600 animate-pulse" />
+              <FaMicrophone className="text-5xl text-black animate-pulse" />
             </CardContent>
             <CardFooter className="flex justify-between items-center mt-auto border-t pt-3">
-              <span className="text-sm text-gray-500">Difficulty: Medium</span>
+              <span className="text-sm text-blue-800">Difficulty: Medium</span>
               <Button
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-black "
                 onClick={() => handleClick("standard")}
               >
                 Enter
@@ -92,9 +92,9 @@ export default function DialogUploaderDemo() {
           </Card>
 
           {/* Classic Level */}
-          <Card className="w-[350px] h-[350px] shadow-lg border border-green-400 hover:scale-105 transition-transform duration-300 flex flex-col">
+          <Card className="w-[300px] h-[300px] shadow-lg border border-black hover:scale-105 transition-transform duration-300 flex flex-col">
             <CardHeader>
-              <CardTitle className="text-green-600 text-xl font-bold">
+              <CardTitle className="text-black text-xl font-bold">
                 Classic
               </CardTitle>
               <CardDescription className="text-gray-600">
@@ -102,12 +102,12 @@ export default function DialogUploaderDemo() {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center items-center flex-grow">
-              <FaMicrophone className="text-5xl text-green-600 animate-pulse" />
+              <FaMicrophone className="text-5xl text-black animate-pulse" />
             </CardContent>
             <CardFooter className="flex justify-between items-center mt-auto border-t pt-3">
-              <span className="text-sm text-gray-500">Difficulty: Hard</span>
+              <span className="text-sm text-red-800">Difficulty: Hard</span>
               <Button
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-black "
                 onClick={() => handleClick("classic")}
               >
                 Enter

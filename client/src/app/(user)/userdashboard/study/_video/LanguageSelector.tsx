@@ -37,7 +37,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className="flex flex-row gap-1 items-center">
-            <Button className="bg-green-800 text-white w-32 flex items-center gap-x-1">
+            <Button className="bg-black text-white w-32 flex items-center gap-x-1">
               {language.charAt(0).toUpperCase()}
               {language.substring(1)}
               <FaChevronDown color="white" className="text-xs mt-[0.7px]" />
@@ -59,9 +59,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
                 key={lang}
                 value={lang}
                 className={
-                  lang === language
-                    ? "bg-blue-100 text-green-600"
-                    : "text-gray-900"
+                  lang === language ? "bg-blue-100 text-black" : "text-gray-900"
                 }
               >
                 {lang}{" "}

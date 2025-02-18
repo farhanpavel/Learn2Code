@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 type Quiz = {
   theoryquestion: string;
@@ -140,7 +141,7 @@ export default function Page() {
     <div className="p-9">
       <div className="flex justify-between items-center w-full border-b-2 border-[#d1cece] pb-4">
         <div className="space-y-2">
-          <div className="flex gap-x-2 items-center text-green-600">
+          <div className="flex gap-x-2 items-center text-black">
             <FaRegLightbulb className="text-3xl" />
             <h1 className="text-2xl font-bold">Take Quiz</h1>
           </div>
@@ -150,18 +151,19 @@ export default function Page() {
         </div>
 
         <div className="flex space-x-2 items-center">
-          <button
+          <Button
+            variant={"default"}
             onClick={handleSubmit}
-            className="px-6 py-2 bg-green-800 text-white rounded-lg flex items-center gap-x-1"
+            className="px-6 py-2  text-white rounded-lg flex items-center gap-x-1"
           >
             <IoBookSharp className="text-white text-sm" />
             <p className="text-semibold text-sm font-bold"> Submit</p>
-          </button>
+          </Button>
           <button
             onClick={handleReload}
-            className="px-6 py-2 text-red-800 border-2 border-red-800 rounded-lg flex items-center gap-x-1"
+            className="px-6 py-2 text-black border-2 border-black rounded-lg flex items-center gap-x-1"
           >
-            <AiOutlineReload className="text-red-800 text-sm stroke-[45px]" />
+            <AiOutlineReload className="text-black text-sm stroke-[45px]" />
             <p className="text-semibold text-sm font-bold"> Reload</p>
           </button>
         </div>

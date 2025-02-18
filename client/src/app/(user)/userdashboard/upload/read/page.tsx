@@ -133,17 +133,17 @@ export default function Page() {
             value={selectedText}
             onChange={(e) => setSelectedText(e.target.value)}
             placeholder="Selected line will appear here..."
-            className="flex-grow p-2 border border-gray-300 rounded-lg "
+            className="flex-grow p-2 border  rounded-lg border-black focus:ring-black"
           />
           <Button
             onClick={handleSubmit}
-            className="bg-green-500 text-xs text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:ring-2 focus:ring-blue-300"
+            className="text-xs text-white px-4 py-2 rounded-lg  focus:ring-2 focus:ring-blue-300"
             disabled={loading2}
           >
             {loading2 ? (
               <Loader2 className="animate-spin text-white" /> // Show loader if loading is true
             ) : (
-              "Submit"
+              "Analyze Text"
             )}
           </Button>
         </div>

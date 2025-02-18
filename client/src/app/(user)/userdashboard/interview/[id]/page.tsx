@@ -74,7 +74,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
   return (
     <div>
       <div className="p-9 space-y-2">
-        <div className="flex gap-x-2 items-center text-green-600">
+        <div className="flex gap-x-2 items-center text-black">
           <FaTeamspeak className="text-3xl" />
           <h1 className="text-2xl font-bold">Start Interview</h1>
         </div>
@@ -85,7 +85,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
           <Card className="border-[1px] border-gray-300 bg-[#F0F4F4]">
             <div className="flex justify-between">
               <CardHeader className="space-y-4">
-                <CardTitle>Case&apos;s Details</CardTitle>
+                <CardTitle>Interview Details</CardTitle>
                 <div>
                   <h1 className="font-semibold text-sm">Enter Informations</h1>
                 </div>
@@ -129,7 +129,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
                         <Input
                           id="jobTitle"
                           type="text"
-                          className="w-1/3 border-[1px] bg-white"
+                          className="w-1/3 border-[1px] bg-white border-black focus:ring-black"
                           value={jobTitle}
                           onChange={(e) => setJobTitle(e.target.value)}
                           required
@@ -142,7 +142,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
                         <Textarea
                           id="jobDescription"
                           rows={7}
-                          className="w-3/4 border-[1px] bg-white resize-none border-gray-400"
+                          className="w-3/4 border-[1px] bg-white resize-none border-black focus:ring-black"
                           value={jobDescription}
                           onChange={(e) => setJobDescription(e.target.value)}
                           required
@@ -154,7 +154,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
                 <CardFooter className="flex justify-end mt-12">
                   <Button
                     type="submit"
-                    className="bg-green-600 text-xs hover:bg-green-800 hover:transition-all hover:delay-100"
+                    className="bg-black text-white text-xs hover:bg-gray-500 hover:transition-all hover:delay-100"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (

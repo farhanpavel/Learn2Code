@@ -1,29 +1,29 @@
 "use client";
-import { useState } from 'react';
-import { FaLaptopCode, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { Button } from '@/components/ui/button';
-import CodeEditor from '../_video/CodeEditor';
-import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useState } from "react";
+import { FaLaptopCode, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+import CodeEditor from "../_video/CodeEditor";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Page() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
-  const [videoTitle, setVideoTitle] = useState('');
-  const [videoDescription, setVideoDescription] = useState('');
-  const [channel, setChannel] = useState({ name: '', avatar: '' });
-  const [views, setViews] = useState('');
-  const [videoId, setVideoId] = useState('');
+  const [videoTitle, setVideoTitle] = useState("");
+  const [videoDescription, setVideoDescription] = useState("");
+  const [channel, setChannel] = useState({ name: "", avatar: "" });
+  const [views, setViews] = useState("");
+  const [videoId, setVideoId] = useState("");
 
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const videoTitle = searchParams.get('title') || '';
-    const videoDescription = searchParams.get('description') || '';
-    const channelName = searchParams.get('channelName') || '';
-    const channelAvatar = searchParams.get('channelAvatar') || '';
-    const views = searchParams.get('views') || '';
-    const videoId = searchParams.get('videoId') || '';
+    const videoTitle = searchParams.get("title") || "";
+    const videoDescription = searchParams.get("description") || "";
+    const channelName = searchParams.get("channelName") || "";
+    const channelAvatar = searchParams.get("channelAvatar") || "";
+    const views = searchParams.get("views") || "";
+    const videoId = searchParams.get("videoId") || "";
 
     setVideoTitle(videoTitle);
     setVideoDescription(videoDescription);
@@ -41,10 +41,10 @@ export default function Page() {
 
   return (
     <div className="ps-12 pr-9 pb-9 bg-gray-100 w-full items-center justify-items-center content-center">
-      <div className='fixed bg-gray-100 w-full z-10 top-0 h-9' />
-      <div className="flex top-9 justify-between items-center w-[87vw] border-b-2 border-[#d1cece] fixed bg-gray-100 z-10 pb-5">
+      <div className="fixed bg-gray-100 w-full z-10 top-0 h-9" />
+      <div className="flex top-9 justify-between items-center w-[78vw] border-b-2 border-[#d1cece] fixed bg-gray-100 z-10 pb-5">
         <div className="space-y-2">
-          <div className="flex gap-x-2 items-center text-green-600">
+          <div className="flex gap-x-2 items-center text-black">
             <FaLaptopCode className="text-3xl" />
             <h1 className="text-2xl font-bold">Watch & Code</h1>
           </div>
@@ -55,21 +55,26 @@ export default function Page() {
 
         <div className="flex space-x-2 items-center">
           <div className="flex flex-row gap-1 items-center">
-            <Button
-              onClick={toggleEditor}
-              className="bg-green-800 text-white w-32"
-            >
+            <Button onClick={toggleEditor} className="bg-black text-white w-32">
               <p>{isEditorOpen ? "Close Editor" : "Open Editor"}</p>
-              <div className='w-2' />
-              {isEditorOpen ? <FaChevronRight color='white' /> : <FaChevronLeft color='white' />}
+              <div className="w-2" />
+              {isEditorOpen ? (
+                <FaChevronRight color="white" />
+              ) : (
+                <FaChevronLeft color="white" />
+              )}
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="ps-9 mx-auto mt-32 mx-2">
+      <div className="ps-9 mx-auto mt-32 ">
         {/* Video Embed */}
-        <div className={`aspect-video w-full rounded-lg overflow-hidden shadow-lg ${isEditorOpen ? 'w-1/2' : 'w-full'}`}>
+        <div
+          className={`aspect-video w-full rounded-lg overflow-hidden shadow-lg ${
+            isEditorOpen ? "w-1/2" : "w-full"
+          }`}
+        >
           <iframe
             className="w-full h-full shadow-lg"
             src={`https://www.youtube.com/embed/${videoId}`} // Replace with your YouTube video ID
@@ -103,7 +108,9 @@ export default function Page() {
 
       {/* Code Editor */}
       <div
-        className={`fixed top-28 right-0 h-full w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isEditorOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-28 right-0 h-full w-1/2 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+          isEditorOpen ? "translate-x-0" : "translate-x-full"
+        }`}
       >
         <CodeEditor />
       </div>

@@ -119,7 +119,7 @@ const PlannerPage = () => {
 
   return (
     <div className="p-9 space-y-2">
-      <div className="flex gap-x-2 items-center text-green-600">
+      <div className="flex gap-x-2 items-center text-black">
         <GoProjectRoadmap className="text-3xl" />
         <h1 className="text-2xl font-bold">Roadmap</h1>
       </div>
@@ -127,7 +127,7 @@ const PlannerPage = () => {
         Create a perfect roadmap for your learning
       </p>
       <div className="py-10 space-y-2 border-[1px] rounded-lg p-8 border-gray-300">
-        <h1 className="font-semibold text-green-600 text-2xl">
+        <h1 className="font-semibold text-black text-2xl">
           Create Your Learning Path
         </h1>
         <p className="text-[#4a4a4a] text-xs">What do you want to learn?</p>
@@ -136,13 +136,13 @@ const PlannerPage = () => {
             type="text"
             value={query}
             onChange={(e) => setquery(e.target.value)}
-            className="bg-white w-1/2"
+            className="bg-white w-1/2 border-black focus:ring-black"
           />
           <div className="flex items-center space-x-2">
             <Button
               disabled={loading}
               onClick={generatePlan}
-              className="bg-green-800 hover:bg-green-600 w-1/2"
+              className="bg-black hover:bg-gray-600 w-1/2"
             >
               {loading ? (
                 <Loader2 className="animate-spin mr-1" size={17} />
@@ -172,10 +172,10 @@ const PlannerPage = () => {
                 >
                   <AccordionTrigger className="flex justify-end items-center p-0 ">
                     <div className="h-[60px] flex items-center relative">
-                      <p className="flex items-center z-20 justify-center h-[30px] mr-3 font-semibold text-xl w-[30px] rounded-full bg-green-800 text-white p-5">
+                      <p className="flex items-center z-20 justify-center h-[30px] mr-3 font-semibold text-xl w-[30px] rounded-full bg-black text-white p-5">
                         {index + 1}
                       </p>
-                      <div className="absolute top-0 left-[20px] h-full bottom-0 w-[3px] bg-green-800"></div>
+                      <div className="absolute top-0 left-[20px] h-full bottom-0 w-[3px] bg-gray-600"></div>
                     </div>
                     <p className="text-sm mr-2 flex-1">{item.step}</p>
                     <div className="flex items-center mx-2">
@@ -215,7 +215,7 @@ const PlannerPage = () => {
                             className="text-xs w-[400px]"
                             rel="noreferrer"
                           >
-                            <Badge className="bg-green-800 text-white">
+                            <Badge className="bg-black text-white">
                               Documentation
                             </Badge>{" "}
                             {link.title}{" "}

@@ -27,7 +27,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, className }) => {
   };
 
   return (
-    <div className="w-[26vw] relative bg-white rounded-lg shadow-md p-4 flex flex-col justify-between h-full">
+    <div className="w-[23vw] relative bg-white rounded-lg shadow-md p-4 flex flex-col justify-between h-full">
       {/* Thumbnail */}
       <figure className="group-hover:opacity-90">
         <img
@@ -42,7 +42,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, className }) => {
       {/* Video Details */}
       <div className="space-y-2 mt-4">
         <h3 className="text-lg font-semibold">
-          <Link href={`/watch/${video.videoId}`}>{video.title}</Link>
+          <h1>{video.title}</h1>
         </h3>
         <p className="text-sm text-muted-foreground">
           {video.descriptionSnippet}
@@ -74,7 +74,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, className }) => {
       <div className="mt-4">
         <Button
           variant="outline"
-          className="w-full hover:bg-green-800 hover:text-white"
+          className="w-full hover:bg-black hover:text-white"
           onClick={handleWatchVideo}
         >
           Watch Now

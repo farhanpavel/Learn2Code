@@ -21,7 +21,7 @@ export const columns: ColumnDef<Book>[] = [
     accessorKey: "name",
     header: ({ column }) => (
       <button
-        className="hover:bg-green-200 flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
+        className="hover:bg-black hover:text-white flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Title
@@ -73,7 +73,7 @@ export const columns: ColumnDef<Book>[] = [
           {/* Loader */}
           {loading && (
             <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-              <ScaleLoader color="#1dce4d" />
+              <ScaleLoader color="black" />
             </div>
           )}
         </div>
@@ -86,7 +86,7 @@ export const columns: ColumnDef<Book>[] = [
     accessorKey: "Booktype",
     header: ({ column }) => (
       <button
-        className="hover:bg-green-200 flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
+        className="hover:bg-black hover:text-white flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Type
@@ -99,7 +99,7 @@ export const columns: ColumnDef<Book>[] = [
     accessorKey: "Booktopic",
     header: ({ column }) => (
       <button
-        className="hover:bg-green-200 flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
+        className="hover:bg-black hover:text-white flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Topic
@@ -112,7 +112,7 @@ export const columns: ColumnDef<Book>[] = [
     accessorKey: "date",
     header: ({ column }) => (
       <button
-        className="hover:bg-green-200 flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
+        className="hover:bg-black hover:text-white flex items-center px-4 py-2 rounded-full hover:transition-all hover:delay-100"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Create Date
