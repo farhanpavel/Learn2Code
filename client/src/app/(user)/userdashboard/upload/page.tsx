@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { MdOutlineUploadFile } from "react-icons/md";
+import { ImUpload } from "react-icons/im";
 import { PiUploadSimpleBold } from "react-icons/pi";
 import { Label } from "@/components/ui/label";
 import { useAppContext } from "@/components/tableContext/page";
@@ -141,7 +141,7 @@ export default function Page() {
     <div>
       <div className="p-9 space-y-2 ">
         <div className="flex gap-x-2 items-center ">
-          <MdOutlineUploadFile className="text-3xl" />
+          <ImUpload className="text-3xl" />
           <h1 className="text-2xl font-bold">Uploads</h1>
         </div>
         <p className="text-xs text-[#4a4a4a]  border-[#d1cece] border-b-[2px] pb-4">
@@ -151,13 +151,10 @@ export default function Page() {
           <div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button
-                  variant={"default"}
-                  className="px-6 py-2  rounded-lg mt-2 flex items-center gap-x-1"
-                >
+                <button className="px-6 py-2 bg-black text-white rounded-lg mt-2 flex items-center gap-x-1">
                   <PiUploadSimpleBold className="text-white text-sm" />
                   <p className="text-semibold text-sm font-bold"> Upload</p>
-                </Button>
+                </button>
               </DialogTrigger>
 
               <DialogContent className="sm:max-w-[425px]">

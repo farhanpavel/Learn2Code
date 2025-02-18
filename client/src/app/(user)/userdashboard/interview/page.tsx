@@ -57,7 +57,7 @@ export default function DialogUploaderDemo() {
               <FaMicrophone className="text-5xl text-black animate-pulse" />
             </CardContent>
             <CardFooter className="flex justify-between items-center mt-auto border-t pt-3">
-              <span className="text-sm text-green-800">Difficulty: Easy</span>
+              <span className="text-sm text-green-700">Difficulty: Easy</span>
               <Button
                 className="bg-black "
                 onClick={() => handleClick("fundamental")}
@@ -81,7 +81,7 @@ export default function DialogUploaderDemo() {
               <FaMicrophone className="text-5xl text-black animate-pulse" />
             </CardContent>
             <CardFooter className="flex justify-between items-center mt-auto border-t pt-3">
-              <span className="text-sm text-blue-800">Difficulty: Medium</span>
+              <span className="text-sm text-blue-700">Difficulty: Medium</span>
               <Button
                 className="bg-black "
                 onClick={() => handleClick("standard")}
@@ -105,7 +105,7 @@ export default function DialogUploaderDemo() {
               <FaMicrophone className="text-5xl text-black animate-pulse" />
             </CardContent>
             <CardFooter className="flex justify-between items-center mt-auto border-t pt-3">
-              <span className="text-sm text-red-800">Difficulty: Hard</span>
+              <span className="text-sm text-red-700">Difficulty: Hard</span>
               <Button
                 className="bg-black "
                 onClick={() => handleClick("classic")}
