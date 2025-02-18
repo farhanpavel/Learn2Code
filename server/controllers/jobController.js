@@ -112,7 +112,7 @@ const postResumeAndExtractSummary = async (req, res) => {
 };
 
 const getSummaryFromAI = async (text) => {
-  const inputPrompt = `Summarize the following text specially write about the skills in a concise manner:
+  const inputPrompt = `Summarize the following text, especially focusing on the skills, and make sure to include the person's name in the summary:
   ${text}`;
 
   try {

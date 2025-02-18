@@ -222,8 +222,8 @@ export default function Page() {
           <div>
             <div className="flex space-x-4 items-center mt-2">
               <Input
-                placeholder="Search by name"
-                className="w-[250px] border-black focus:ring-black bg-white text-xs"
+                placeholder="Search by Title"
+                className="w-[250px] border-black focus:ring-black  text-xs"
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

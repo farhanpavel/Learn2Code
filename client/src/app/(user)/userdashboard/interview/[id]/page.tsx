@@ -35,7 +35,8 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const router = useRouter();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const [open, setOpen] = React.useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -94,7 +95,7 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
 
             <CardContent>
               <div>
-                <Dialog>
+                <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
@@ -113,7 +114,12 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
                     <FileUploader
                       maxFileCount={1} // Only allow one file for resume
                       maxSize={8 * 1024 * 1024} // 8MB limit
-                      onValueChange={setFiles}
+                      onValueChange={(uploadedFiles) => {
+                        setFiles(uploadedFiles);
+                        if (uploadedFiles.length > 0) {
+                          setOpen(false); // Close dialog after upload
+                        }
+                      }}
                     />
                   </DialogContent>
                 </Dialog>
