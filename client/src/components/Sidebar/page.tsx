@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   Home,
@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
+import { useEffect, useState } from "react"; // Import useEffect and useState
 
 type NavItem = {
   title: string;
@@ -63,8 +64,14 @@ const navItems: NavItem[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const tripPlanId = searchParams.get("tripPlanId");
+  const [tripPlanId, setTripPlanId] = useState("");
+
+  useEffect(() => {
+    // Parse query parameters from the URL
+    const queryParams = new URLSearchParams(window.location.search);
+    const tripPlanId = queryParams.get("tripPlanId") || "";
+    setTripPlanId(tripPlanId);
+  }, []);
 
   return (
     <TooltipProvider delayDuration={0}>
