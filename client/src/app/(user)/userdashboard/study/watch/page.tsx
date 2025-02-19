@@ -1,29 +1,27 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaLaptopCode, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import CodeEditor from "../_video/CodeEditor";
-import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
 
 export default function Page() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
-
   const [videoTitle, setVideoTitle] = useState("");
   const [videoDescription, setVideoDescription] = useState("");
   const [channel, setChannel] = useState({ name: "", avatar: "" });
   const [views, setViews] = useState("");
   const [videoId, setVideoId] = useState("");
 
-  const searchParams = useSearchParams();
-
   useEffect(() => {
-    const videoTitle = searchParams.get("title") || "";
-    const videoDescription = searchParams.get("description") || "";
-    const channelName = searchParams.get("channelName") || "";
-    const channelAvatar = searchParams.get("channelAvatar") || "";
-    const views = searchParams.get("views") || "";
-    const videoId = searchParams.get("videoId") || "";
+    // Parse query parameters from the URL
+    const queryParams = new URLSearchParams(window.location.search);
+
+    const videoTitle = queryParams.get("title") || "";
+    const videoDescription = queryParams.get("description") || "";
+    const channelName = queryParams.get("channelName") || "";
+    const channelAvatar = queryParams.get("channelAvatar") || "";
+    const views = queryParams.get("views") || "";
+    const videoId = queryParams.get("videoId") || "";
 
     setVideoTitle(videoTitle);
     setVideoDescription(videoDescription);
@@ -33,7 +31,7 @@ export default function Page() {
     });
     setViews(views);
     setVideoId(videoId);
-  }, [searchParams]);
+  }, []);
 
   const toggleEditor = () => {
     setIsEditorOpen(!isEditorOpen);
@@ -42,7 +40,7 @@ export default function Page() {
   return (
     <div className="ps-12 pr-9 pb-9 bg-gray-100 w-full items-center justify-items-center content-center">
       <div className="fixed bg-gray-100 w-full z-10 top-0 h-9" />
-      <div className="flex top-9 justify-between items-center w-[78vw] border-b-2 border-black  fixed bg-gray-100 z-10 pb-5">
+      <div className="flex top-9 justify-between items-center w-[75vw] border-b-2 border-black  fixed bg-gray-100 z-10 pb-5">
         <div className="space-y-2">
           <div className="flex gap-x-2 items-center text-black">
             <FaLaptopCode className="text-3xl" />
@@ -77,7 +75,7 @@ export default function Page() {
         >
           <iframe
             className="w-full h-full shadow-lg"
-            src={`https://www.youtube.com/embed/${videoId}`} // Replace with your YouTube video ID
+            src={`https://www.youtube.com/embed/${videoId}`}
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen

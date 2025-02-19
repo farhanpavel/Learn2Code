@@ -3,9 +3,12 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation"; // Import the useRouter hook
 import { url } from "@/components/Url/page";
-
+interface EvaluationData {
+  mark: number;
+  suggestion: string;
+}
 const InterviewEvaluationPage = () => {
-  const [evaluation, setEvaluation] = useState(null);
+  const [evaluation, setEvaluation] = useState<EvaluationData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter(); // Initialize the router
   useEffect(() => {
@@ -60,7 +63,7 @@ const InterviewEvaluationPage = () => {
             className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-xl"
           >
             <h2 className="text-3xl font-bold text-white">
-              Marks: {evaluation.mark}/10
+              Marks: {evaluation?.mark ?? "N/A"}/10
             </h2>
             <p className="text-lg text-white/90 leading-relaxed mt-4">
               Your performance has been evaluated based on the interview
@@ -79,7 +82,7 @@ const InterviewEvaluationPage = () => {
               Suggestions for Improvement
             </h2>
             <p className="text-lg text-white/90 leading-relaxed mt-4">
-              {evaluation.suggestion || "No specific suggestions provided."}
+              {evaluation?.suggestion ?? "No specific suggestions provided."}
             </p>
           </motion.div>
 

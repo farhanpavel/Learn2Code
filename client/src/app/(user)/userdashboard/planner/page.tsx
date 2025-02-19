@@ -22,7 +22,34 @@ import { Clock, Loader2, Play, Sparkles } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { GoProjectRoadmap } from "react-icons/go";
-
+interface ReferenceLink {
+  type: "video" | "documentation"; // Define possible types
+  embed_url?: string; // Only for videos
+  url?: string; // Only for documentation
+  title: string;
+}
+interface Step {
+  step: string;
+  difficulty: "Beginner" | "Intermediate" | "Advanced"; // Define possible difficulties
+  reference_links?: ReferenceLink[];
+  time: string;
+}
+interface Result {
+  title: string;
+  description: string;
+  level: string; // Assuming level exists in the payload
+  steps: Step[];
+}
+interface Root {
+  result: Result;
+}
+interface Plan {
+  result: {
+    title: string;
+    description: string;
+    steps: Step[];
+  };
+}
 const PlannerPage = () => {
   const [query, setquery] = useState<string>("");
   const [level, setlevel] = useState<string>("");
@@ -164,7 +191,7 @@ const PlannerPage = () => {
               {plan.result.description}
             </p>
             <Accordion type="single" collapsible>
-              {plan.result.steps.map((item, index) => (
+              {plan.result.steps.map((item: Step, index: number) => (
                 <AccordionItem
                   value={`item-${index}`}
                   key={index}

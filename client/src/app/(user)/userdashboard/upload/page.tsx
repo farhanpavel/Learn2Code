@@ -162,7 +162,8 @@ export default function Page() {
                 <DialogHeader>
                   <DialogTitle>Upload File</DialogTitle>
                   <DialogDescription>
-                    Select a file to upload. Click "Upload" when ready.
+                    Select a file to upload. Click &quot;Upload&quot; when
+                    ready.
                   </DialogDescription>
                 </DialogHeader>
 

@@ -14,6 +14,7 @@ interface FetchData {
   Booktopic: string;
   date: string;
   _id: string;
+  status: "0";
 }
 interface AppContextType {
   bookData: FetchData[];

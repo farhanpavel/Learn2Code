@@ -15,8 +15,13 @@ interface QuizResult {
   question: string;
   ans: string;
 }
-
-export default function Page({ params }) {
+interface PageProps {
+  params: {
+    id: string;
+    title: string;
+  };
+}
+export default function Page({ params }: PageProps) {
   const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
   const [points, setPoints] = useState<number>(0);
 

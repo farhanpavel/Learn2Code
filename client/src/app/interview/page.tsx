@@ -7,18 +7,22 @@ import { Mic, SkipForward, Volume2, VolumeX, CheckCircle } from "lucide-react";
 import "dotenv/config";
 
 export default function InterviewPage() {
-  const [currentQuestion, setCurrentQuestion] = useState(null);
-  const [timer, setTimer] = useState(120);
-  const [countdown, setCountdown] = useState(5);
-  const [isMicActive, setIsMicActive] = useState(false);
-  const [inputText, setInputText] = useState("");
-  const [recognition, setRecognition] = useState(null);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isCountdownActive, setIsCountdownActive] = useState(true);
-  const [questions, setQuestions] = useState([]);
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState<string | null>(null);
+  const [timer, setTimer] = useState<number>(120);
+  const [countdown, setCountdown] = useState<number>(5);
+  const [isMicActive, setIsMicActive] = useState<boolean>(false);
+  const [inputText, setInputText] = useState<string>("");
+  const [recognition, setRecognition] = useState<SpeechRecognition | null>(
+    null
+  );
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [isCountdownActive, setIsCountdownActive] = useState<boolean>(true);
+  const [questions, setQuestions] = useState<
+    { _id: string; question: string }[]
+  >([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const router = useRouter();
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const ELEVENLABS_API_KEY = process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY;
   const ELEVENLABS_VOICE_ID = process.env.NEXT_PUBLIC_ELEVENLABS_VOICE_ID;
@@ -79,7 +83,7 @@ export default function InterviewPage() {
     }
   }, [countdown, isCountdownActive]);
 
-  const speakQuestion = async (text) => {
+  const speakQuestion = async (text: string) => {
     if (!text) return;
 
     try {
@@ -90,7 +94,7 @@ export default function InterviewPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "xi-api-key": ELEVENLABS_API_KEY,
+            "xi-api-key": ELEVENLABS_API_KEY as string,
           },
           body: JSON.stringify({
             text: text,
@@ -110,11 +114,10 @@ export default function InterviewPage() {
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
         audioRef.current.play();
+        audioRef.current.onended = () => {
+          setIsSpeaking(false);
+        };
       }
-
-      audioRef.current.onended = () => {
-        setIsSpeaking(false);
-      };
     } catch (error) {
       console.error("Error generating speech:", error);
       setIsSpeaking(false);
@@ -159,7 +162,7 @@ export default function InterviewPage() {
     }
   };
 
-  const sendResponseToAPI = async (questionId, response) => {
+  const sendResponseToAPI = async (questionId: string, response: string) => {
     try {
       console.log(response);
       const apiUrl = `${url}/api/data-extract/${questionId}`;
@@ -206,7 +209,7 @@ export default function InterviewPage() {
     }
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
