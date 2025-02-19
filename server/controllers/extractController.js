@@ -5,6 +5,8 @@ const { storeSchema } = require("../models/storeSchema");
 const { questionSchema } = require("../models/questionSchema");
 const Store = mongoose.model("store", storeSchema);
 const Question = mongoose.model("question", questionSchema);
+const { pdfSchema } = require("../models/pdfSchema");
+const Pdf = mongoose.model("pdf", pdfSchema);
 require("dotenv").config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
@@ -87,7 +89,7 @@ const getQuestionFromAI = async (text) => {
 };
 
 const questionData = async (req, res) => {
-  const { pdfUrl } = req.body;
+  const { pdfUrl, title, user_id } = req.body;
 
   if (!pdfUrl) {
     return res.status(400).json({ error: "Missing pdfUrl" });
@@ -98,7 +100,7 @@ const questionData = async (req, res) => {
     if (!response.ok) {
       throw new Error("Failed to fetch PDF");
     }
-
+    await Pdf.updateOne({ Booktopic: title }, { $set: { status: "1" } });
     const buffer = await response.arrayBuffer();
     const pdfData = await pdfParse(Buffer.from(buffer));
 
@@ -109,10 +111,10 @@ const questionData = async (req, res) => {
       throw new Error("Invalid format: Expected an array of questions");
     }
 
-    await Question.deleteMany({});
-
     const questionDocs = questionData.map((q) => ({
       theoryquestion: q.theoryquestion,
+      title,
+      user_id,
     }));
 
     await Question.insertMany(questionDocs);
@@ -127,7 +129,10 @@ const questionData = async (req, res) => {
 };
 const questionGet = async (req, res) => {
   try {
-    const pdfs = await Question.find();
+    const pdfs = await Question.find({
+      user_id: req.params.id,
+      title: req.params.title,
+    });
     res.json(pdfs);
   } catch (error) {
     res.status(500).json({ error: error.message });

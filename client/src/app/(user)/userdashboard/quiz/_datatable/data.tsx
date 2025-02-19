@@ -30,51 +30,23 @@ export type Book = {
   Booktype: string;
   Booktopic: string;
   date: string;
-  status: string;
 };
 
 export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
+  const user_id = "123";
   const { setbookData, bookData } = useAppContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleQuiz = async () => {
-    console.log(user.pdfUrl);
-    Cookies.set("title", user.Booktopic);
-    setLoading(true);
-    try {
-      const response = await fetch(`${url}/api/data/question-generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          pdfUrl: user.pdfUrl,
-          user_id: "123",
-          title: user.Booktopic,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        router.push("/userdashboard/quiz/take");
-      } else {
-        console.error("Failed to extract PDF text");
-      }
-    } catch (error) {
-      console.error("Error sending request:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDelete = async () => {
     try {
-      const response = await fetch(`${url}/api/pdfs/${user._id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${url}/api/question/data/${user_id}/${user.Booktopic}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         alert("Failed to delete user");
@@ -103,15 +75,14 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
             Actions
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {user.status == "0" && (
-            <DropdownMenuItem
-              onClick={() => handleQuiz()}
-              className="hover:bg-green-200 hover:text-white rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
-            >
-              Take Quiz
-            </DropdownMenuItem>
-          )}
-
+          <DropdownMenuItem
+            onClick={() => {
+              router.push(`/userdashboard/quiz/${user_id}/${user.Booktopic}`);
+            }}
+            className="hover:bg-green-400 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
+          >
+            View
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setIsDialogOpen(true)}
             className="hover:bg-red-400 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"

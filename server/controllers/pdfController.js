@@ -59,6 +59,7 @@ const pdfPost = async (req, res) => {
       name: req.file.originalname,
       Booktype: req.body.Booktype,
       Booktopic: req.body.Booktopic,
+      status: req.body.status,
     });
 
     await newPdf.save();

@@ -14,7 +14,7 @@ const systemInstruction = {
   role: "model",
   parts: [
     {
-      text: "Provide a short review for the given code..provide corrections and suggestions",
+      text: "Provide a short review for the given code..provide corrections and suggestions in 3 to 4 line",
     },
   ],
 };

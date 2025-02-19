@@ -13,6 +13,22 @@ const resultSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  correctness: {
+    type: String,
+    required: true,
+  },
+  comment: {
+    type: String,
+    required: true,
+  },
+  user_id: {
+    type: String,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = { resultSchema };

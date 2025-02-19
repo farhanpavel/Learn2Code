@@ -19,6 +19,10 @@ const pdfSchema = new mongoose.Schema({
     type: String,
     default: () => new Date().toISOString().split("T")[0],
   },
+  status: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = { pdfSchema };

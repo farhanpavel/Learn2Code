@@ -14,6 +14,7 @@ export type Book = {
   Booktopic: string;
   date: string;
   _id: string;
+  status: string;
 };
 
 export const columns: ColumnDef<Book>[] = [

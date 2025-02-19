@@ -21,8 +21,14 @@ const resultGet = async (req, res) => {
       return res.status(404).json({ message: "No summary found" });
     }
 
-    const questions = await Question.find();
-    const answers = await Ans.find();
+    const questions = await Question.find({
+      user_id: req.params.id,
+      title: req.params.title,
+    });
+    const answers = await Ans.find({
+      user_id: req.params.id,
+      title: req.params.title,
+    });
 
     const answerMap = new Map();
     answers.forEach((ans) => {
@@ -53,7 +59,17 @@ const resultGet = async (req, res) => {
         answer: matchingData?.ans || "Unknown answer",
       };
     });
-
+    const resultData = finalResult.map((item) => ({
+      id: item._id, // Assuming _id is the question ID or some unique identifier
+      question: item.question,
+      ans: item.answer,
+      correctness: item.correctness,
+      comment: item.comment,
+      user_id: req.params.id,
+      title: req.params.title,
+    }));
+    console.log(resultData);
+    await Result.insertMany(resultData);
     res.status(200).json(finalResult);
   } catch (error) {
     console.error("Error fetching data:", error);

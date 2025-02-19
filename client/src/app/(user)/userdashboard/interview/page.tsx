@@ -37,7 +37,7 @@ export default function DialogUploaderDemo() {
             <FaTeamspeak className="text-3xl" />
             <h1 className="text-2xl font-bold">Interview</h1>
           </div>
-          <p className="text-xs text-[#4a4a4a] border-[#d1cece] border-b-[2px] pb-4">
+          <p className="text-xs text-[#4a4a4a] border-black border-b-[2px] pb-4">
             Create a perfect Interview for your Job
           </p>
         </div>

@@ -123,7 +123,7 @@ const PlannerPage = () => {
         <GoProjectRoadmap className="text-3xl" />
         <h1 className="text-2xl font-bold">Roadmap</h1>
       </div>
-      <p className="text-xs text-[#4a4a4a] border-[#d1cece] border-b-[2px] pb-4">
+      <p className="text-xs text-[#4a4a4a] border-black  border-b-[2px] pb-4">
         Create a perfect roadmap for your learning
       </p>
       <div className="py-10 space-y-2 border-[1px] rounded-lg p-8 border-gray-300">

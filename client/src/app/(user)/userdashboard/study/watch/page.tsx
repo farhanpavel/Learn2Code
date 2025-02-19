@@ -42,7 +42,7 @@ export default function Page() {
   return (
     <div className="ps-12 pr-9 pb-9 bg-gray-100 w-full items-center justify-items-center content-center">
       <div className="fixed bg-gray-100 w-full z-10 top-0 h-9" />
-      <div className="flex top-9 justify-between items-center w-[78vw] border-b-2 border-[#d1cece] fixed bg-gray-100 z-10 pb-5">
+      <div className="flex top-9 justify-between items-center w-[78vw] border-b-2 border-black  fixed bg-gray-100 z-10 pb-5">
         <div className="space-y-2">
           <div className="flex gap-x-2 items-center text-black">
             <FaLaptopCode className="text-3xl" />

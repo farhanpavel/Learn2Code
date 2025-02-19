@@ -8,22 +8,23 @@ import { Textarea } from "@/components/ui/textarea";
 import { url } from "@/components/Url/page";
 import { Button } from "@/components/ui/button";
 import ScaleLoader from "react-spinners/ScaleLoader";
-
+import Cookies from "js-cookie";
 interface QuizResult {
   _id: string;
   comment: string;
   correctness: string;
   original_answer: string;
   question: string;
-  answer: string;
+  ans: string;
 }
-
-const API_URL = `${url}/api/result`;
 
 export default function Page() {
   const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
   const [points, setPoints] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true); // Add loading state
+  const title = Cookies.get("title");
+  const user_id = "123";
+  const API_URL = `${url}/api/question/data/${user_id}/${title}`;
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -65,7 +66,7 @@ export default function Page() {
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-center w-full border-b-2 border-[#d1cece] pb-4">
+          <div className="flex justify-between items-center w-full border-b-2 border-black  pb-4">
             <div className="space-y-2">
               <div className="flex gap-x-2 items-center text-green-600">
                 <FaRegLightbulb className="text-3xl" />
@@ -119,7 +120,7 @@ export default function Page() {
                       <Textarea
                         className="border-2 resize-none border-green-800"
                         rows={2}
-                        value={item.answer}
+                        value={item.ans}
                         disabled
                       />
                     </div>
@@ -134,7 +135,7 @@ export default function Page() {
                         <p className="text-sm mt-4 text-green-800 font-bold border-b-2 border-green-800 inline-block">
                           Original Answer
                         </p>
-                        <p className="text-xs mt-2">{item.original_answer}</p>
+                        <p className="text-xs mt-2">{item.ans}</p>
                       </div>
                     </div>
                   </div>

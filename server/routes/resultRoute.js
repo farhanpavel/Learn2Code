@@ -3,6 +3,6 @@ const { resultGet } = require("../controllers/resultController");
 
 const resultRoutes = express.Router();
 
-resultRoutes.get("/result", resultGet);
+resultRoutes.post("/result/:id/:title", resultGet);
 
 module.exports = resultRoutes;

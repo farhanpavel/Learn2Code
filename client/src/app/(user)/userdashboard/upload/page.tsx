@@ -63,6 +63,7 @@ export default function Page() {
   const [book, setBook] = useState({
     Booktype: "PDF",
     Booktopic: "",
+    status: "0",
   });
   const [dataAll, setData] = useState<Book[]>([]);
   const [file, setFile] = useState<File | null>(null);
@@ -91,7 +92,7 @@ export default function Page() {
       formData.append("pdfFile", file);
       formData.append("Booktype", book.Booktype);
       formData.append("Booktopic", book.Booktopic);
-
+      formData.append("status", book.status);
       const response = await fetch(`${url}/api/upload`, {
         method: "POST",
         body: formData,
@@ -144,7 +145,7 @@ export default function Page() {
           <ImUpload className="text-3xl" />
           <h1 className="text-2xl font-bold">Uploads</h1>
         </div>
-        <p className="text-xs text-[#4a4a4a]  border-[#d1cece] border-b-[2px] pb-4">
+        <p className="text-xs text-[#4a4a4a]  border-black  border-b-[2px] pb-4">
           Manage all of your uploads here!
         </p>
         <div className="flex justify-between">

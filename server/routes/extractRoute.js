@@ -11,5 +11,5 @@ const extractRoutes = express.Router();
 extractRoutes.post("/extract-pdf-text", extractData);
 
 extractRoutes.post("/data/question-generate", questionData);
-extractRoutes.get("/data/question-generate", questionGet);
+extractRoutes.get("/data/question-generate/:id/:title", questionGet);
 module.exports = extractRoutes;
