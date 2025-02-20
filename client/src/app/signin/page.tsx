@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { url } from "@/components/Url/page";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import ButtonLoader from "@/components/ButtonLoader/page";
 
 interface SigninFormData {
   email: string;
@@ -14,11 +15,14 @@ interface SigninFormData {
 
 export default function Signin() {
   const router = useRouter();
+  const [isvalid, setvalid] = useState(false);
+  const [isLogged, setLogged] = useState(false);
   const [user, setUser] = useState({
     email: "",
     password: "",
   });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setvalid(false);
     setUser({ ...user, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,14 +36,18 @@ export default function Signin() {
         body: JSON.stringify(user),
       });
       if (!response.ok) {
-        alert("Error");
+        setvalid(true);
         throw new Error("Failed to login");
       }
+      setvalid(false);
       const data = await response.json();
-      Cookies.set("AccessToken", data.accessToken);
-      Cookies.set("RefreshToken", data.refreshToken);
-      alert("SuccessFul");
-      router.push("/userdashboard/overview");
+      setLogged(true);
+
+      setTimeout(() => {
+        Cookies.set("AccessToken", data.accessToken);
+        Cookies.set("RefreshToken", data.refreshToken);
+        router.push("/userdashboard/overview");
+      }, 2000);
     } catch (err) {
       console.log("Error", err);
     }
@@ -71,7 +79,11 @@ export default function Signin() {
                   className="border border-gray-300 p-2 text-[#4a4a4a] rounded-[5px] bg-[#F0F4F4] "
                   onChange={handleChange}
                 />
-
+                {isvalid && (
+                  <div className="text-left text-sm text-red-600 mx-1">
+                    <p>Invalid Email</p>
+                  </div>
+                )}
                 <Input
                   type="password"
                   id="password"
@@ -80,13 +92,17 @@ export default function Signin() {
                   className="border border-gray-300 p-2 text-[#4a4a4a] rounded-[5px] bg-[#F0F4F4] "
                   onChange={handleChange}
                 />
-
+                {isvalid && (
+                  <div className="text-left text-sm text-red-600 mx-1">
+                    <p>Invalid Password</p>
+                  </div>
+                )}
                 <div className="space-x-3">
                   <button
                     type="submit"
                     className="px-6 py-2 bg-[#10343c]  w-1/2 text-white rounded-full mt-2"
                   >
-                    Login
+                    {isLogged ? <ButtonLoader /> : "Login"}
                   </button>
                 </div>
               </form>

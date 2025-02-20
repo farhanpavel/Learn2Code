@@ -4,9 +4,14 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { url } from "@/components/Url/page";
 import { useRouter } from "next/navigation";
+import ButtonLoader from "@/components/ButtonLoader/page";
 
 export default function Signup() {
   const router = useRouter();
+  const [isvalid, setvalid] = useState(false);
+  const [checkpassword, setPassword] = useState(false);
+  const [isLogged, setLogged] = useState(false);
+
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -15,11 +20,14 @@ export default function Signup() {
   });
   const { password, confirmpassword } = user;
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(false);
+    setvalid(false);
     setUser({ ...user, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (password == confirmpassword) {
+      setPassword(false);
       try {
         const response = await fetch(`${url}/api/auth/register`, {
           method: "POST",
@@ -29,17 +37,20 @@ export default function Signup() {
           body: JSON.stringify(user),
         });
         if (!response.ok) {
-          alert("Failed to register the user");
+          setvalid(true);
           throw new Error("Failed to submit data");
         } else {
-          alert("SuccessFull");
-          router.push("/signin");
+          setvalid(false);
+          setLogged(true);
+          setTimeout(() => {
+            router.push("/signin");
+          }, 2000);
         }
       } catch (err) {
         console.log("error", err);
       }
     } else {
-      alert("Password Doesnot Match");
+      setPassword(true);
     }
   };
 
@@ -78,6 +89,11 @@ export default function Signup() {
                   placeholder="Email"
                   onChange={handleChange}
                 />
+                {isvalid && (
+                  <div className="text-left text-sm text-red-600 mx-1">
+                    <p>Email Already Existed</p>
+                  </div>
+                )}
                 <Input
                   type="password"
                   id="password"
@@ -86,6 +102,7 @@ export default function Signup() {
                   placeholder="Password"
                   onChange={handleChange}
                 />
+
                 <Input
                   type="password"
                   id="confirmpassword"
@@ -94,13 +111,17 @@ export default function Signup() {
                   placeholder="Confirm Password"
                   onChange={handleChange}
                 />
-
+                {checkpassword && (
+                  <div className="text-left text-sm text-red-600 mx-1">
+                    <p>Password Doesnot Match</p>
+                  </div>
+                )}
                 <div className="space-x-3">
                   <button
                     type="submit"
                     className="px-6 py-2 bg-[#10343c] w-1/2 text-white rounded-full mt-2"
                   >
-                    Register
+                    {isLogged ? <ButtonLoader /> : "Register"}
                   </button>
                 </div>
               </form>

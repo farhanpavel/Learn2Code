@@ -1,4 +1,5 @@
 "use client";
+
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -8,7 +9,17 @@ import {
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
 import Image from "next/image";
+import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
+
 export default function Header() {
+  const [token, setToken] = useState<string | null>(null); // Allow string or null
+
+  useEffect(() => {
+    const storedToken = Cookies.get("AccessToken") || null; // Ensure null fallback
+    setToken(storedToken);
+  }, []);
+
   return (
     <header className="container mx-auto flex h-20 w-full shrink-0 justify-between items-center px-4 md:px-6 font-rubik">
       <Sheet>
@@ -106,12 +117,21 @@ export default function Header() {
         </NavigationMenu>
       </div>
       <div>
-        <Link
-          href="/signin"
-          className="bg-[#10343c] px-6 py-3 text-white rounded-full font-semibold 2xl:px-8 2xl:py-4"
-        >
-          Login
-        </Link>
+        {token ? (
+          <Link
+            href="/userdashboard/overview"
+            className="bg-[#10343c] px-6 py-3 text-white rounded-full font-semibold 2xl:px-8 2xl:py-4"
+          >
+            Dashboard
+          </Link>
+        ) : (
+          <Link
+            href="/signin"
+            className="bg-[#10343c] px-6 py-3 text-white rounded-full font-semibold 2xl:px-8 2xl:py-4"
+          >
+            Login
+          </Link>
+        )}
       </div>
     </header>
   );
