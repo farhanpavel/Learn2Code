@@ -12,6 +12,7 @@ const watchRoutes = require("./routes/watchRoute");
 const plannerRoute = require("./routes/planner");
 const jobRoutes = require("./routes/jobRoute");
 const questionresultRoutes = require("./routes/questionResultRoute");
+const authRoutes = require("./routes/userRoute");
 require("dotenv").config();
 
 const app = express();
@@ -49,3 +50,4 @@ app.use("/api", watchRoutes);
 app.use("/api", plannerRoute);
 app.use("/api", jobRoutes);
 app.use("/api", questionresultRoutes);
+app.use("/api/auth", authRoutes);

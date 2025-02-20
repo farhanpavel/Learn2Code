@@ -7,6 +7,7 @@ import { IoMdArrowRoundForward } from "react-icons/io";
 import { Textarea } from "@/components/ui/textarea";
 import { url } from "@/components/Url/page";
 import { Button } from "@/components/ui/button";
+import Cookies from "js-cookie";
 interface QuizResult {
   _id: string;
   comment: string;
@@ -25,12 +26,19 @@ export default function Page({ params }: PageProps) {
   const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
   const [points, setPoints] = useState<number>(0);
 
-  const API_URL = `${url}/api/question/data/${params.id}/${params.title}`;
+  const API_URL = `${url}/api/question/data/${params.title}`;
 
   useEffect(() => {
+    const accessToken = Cookies.get("AccessToken");
     const fetchResults = async () => {
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: accessToken || "",
+          },
+        });
         const data: QuizResult[] = await response.json();
         setQuizResults(data);
         updatePoints(data);

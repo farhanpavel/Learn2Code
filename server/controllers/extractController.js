@@ -89,7 +89,8 @@ const getQuestionFromAI = async (text) => {
 };
 
 const questionData = async (req, res) => {
-  const { pdfUrl, title, user_id } = req.body;
+  const { pdfUrl, title } = req.body;
+  const user_id = req.user.id;
 
   if (!pdfUrl) {
     return res.status(400).json({ error: "Missing pdfUrl" });
@@ -128,9 +129,10 @@ const questionData = async (req, res) => {
   }
 };
 const questionGet = async (req, res) => {
+  const userId = req.user.id;
   try {
     const pdfs = await Question.find({
-      user_id: req.params.id,
+      user_id: userId,
       title: req.params.title,
     });
     res.json(pdfs);

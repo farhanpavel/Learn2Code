@@ -10,29 +10,33 @@ const Question = mongoose.model("question", questionSchema);
 const Ans = mongoose.model("Ans", ansSchema);
 
 const questionresultGet = async (req, res) => {
+  const userId = req.user.id;
   const data = await Pdf.find({
     status: "1",
+    userId,
   });
   res.status(200).json(data);
 };
 const questionresultGetByid = async (req, res) => {
+  const user_id = req.user.id;
   const data = await Result.find({
-    user_id: req.params.id,
+    user_id,
     title: req.params.title,
   });
   res.status(200).json(data);
 };
 const questionresultDelete = async (req, res) => {
+  const user_id = req.user.id;
   try {
     // Delete documents from Question collection
     await Question.deleteMany({
-      user_id: req.params.id, // Corrected typo: `ser_id` to `user_id`
+      user_id, // Corrected typo: `ser_id` to `user_id`
       title: req.params.title,
     });
 
     // Delete documents from Ans collection
     await Ans.deleteMany({
-      user_id: req.params.id, // Corrected typo: `ser_id` to `user_id`
+      user_id, // Corrected typo: `ser_id` to `user_id`
       title: req.params.title,
     });
 
@@ -47,7 +51,7 @@ const questionresultDelete = async (req, res) => {
     );
 
     const data = await Result.deleteMany({
-      user_id: req.params.id,
+      user_id,
       title: req.params.title,
     });
 

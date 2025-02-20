@@ -8,12 +8,64 @@ const Store = mongoose.model("store", storeSchema);
 const Question = mongoose.model("question", questionSchema);
 const Ans = mongoose.model("Ans", ansSchema);
 const Result = mongoose.model("Result", resultSchema);
+const pdfParse = require("pdf-parse");
+const fetch = require("node-fetch");
 require("dotenv").config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+//
+const getSummaryFromAI = async (text) => {
+  const inputPrompt = `Summarize the following text in a concise manner:
+  ${text}`;
+
+  try {
+    const response = await model.generateContent(inputPrompt);
+    return response.response.text();
+  } catch (error) {
+    console.error("Error generating summary from AI:", error);
+    throw new Error("Failed to generate summary from AI.");
+  }
+};
+
+const extractData = async (req, res) => {
+  const { pdfUrl } = req.body;
+  if (!pdfUrl) {
+    return res.status(400).json({ error: "Missing pdfUrl" });
+  }
+
+  try {
+    const response = await fetch(pdfUrl);
+    if (!response.ok) {
+      throw new Error("Failed to fetch PDF");
+    }
+
+    const buffer = await response.arrayBuffer();
+    const pdfData = await pdfParse(Buffer.from(buffer));
+
+    const summary = await getSummaryFromAI(pdfData.text);
+
+    const updatedStore = await Store.findOneAndReplace(
+      {},
+      { description: summary },
+      { upsert: true, new: true }
+    );
+
+    return res.status(200).json({
+      message: "PDF summary extracted and stored",
+      summary,
+      updatedStore, // Optionally return the updated store document
+    });
+  } catch (error) {
+    console.error("Error processing PDF:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+//
+
 const resultGet = async (req, res) => {
+  const user_id = req.user.id;
   try {
     const latestStore = await Store.findOne().sort({ date: -1 });
 
@@ -22,11 +74,11 @@ const resultGet = async (req, res) => {
     }
 
     const questions = await Question.find({
-      user_id: req.params.id,
+      user_id,
       title: req.params.title,
     });
     const answers = await Ans.find({
-      user_id: req.params.id,
+      user_id,
       title: req.params.title,
     });
 
@@ -65,7 +117,7 @@ const resultGet = async (req, res) => {
       ans: item.answer,
       correctness: item.correctness,
       comment: item.comment,
-      user_id: req.params.id,
+      user_id,
       title: req.params.title,
     }));
     console.log(resultData);
@@ -108,4 +160,4 @@ const getAIResponse = async (data) => {
   }
 };
 
-module.exports = { resultGet };
+module.exports = { resultGet, extractData };

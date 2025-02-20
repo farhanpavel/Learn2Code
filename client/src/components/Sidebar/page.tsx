@@ -24,7 +24,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { useEffect, useState } from "react"; // Import useEffect and useState
-
+import Cookies from "js-cookie";
 type NavItem = {
   title: string;
   href: string;
@@ -65,7 +65,11 @@ const navItems: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [tripPlanId, setTripPlanId] = useState("");
-
+  const handleClick = () => {
+    Cookies.remove("AccessToken");
+    Cookies.remove("RefreshToken");
+    Cookies.remove("title");
+  };
   useEffect(() => {
     // Parse query parameters from the URL
     const queryParams = new URLSearchParams(window.location.search);
@@ -114,8 +118,12 @@ export default function Sidebar() {
             </div>
           </ScrollArea>
           <div className="mt-auto border-t p-2">
-            <Link href="/logout">
-              <Button variant="ghost" className="w-full justify-start">
+            <Link href="/">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={handleClick}
+              >
                 <LogOut size={20} className="mr-2" />
                 Logout
               </Button>

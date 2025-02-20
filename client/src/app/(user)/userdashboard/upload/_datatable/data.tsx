@@ -42,22 +42,35 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
   const handleQuiz = async () => {
     console.log(user.pdfUrl);
     Cookies.set("title", user.Booktopic);
+    const accessToken = Cookies.get("AccessToken");
+    console.log(accessToken);
+    if (!accessToken) {
+      alert("You are not authenticated!");
+      return;
+    }
     setLoading(true);
     try {
-      const response = await fetch(`${url}/api/data/question-generate`, {
+      const response1 = await fetch(`${url}/api/result/all/data`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ pdfUrl: user.pdfUrl }),
+      });
+      const response2 = await fetch(`${url}/api/data/question-generate`, {
+        method: "POST",
+        headers: {
+          Authorization: accessToken,
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           pdfUrl: user.pdfUrl,
-          user_id: "123",
           title: user.Booktopic,
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (response2.ok && response1.ok) {
+        const data = await response2.json();
         console.log(data);
         router.push("/userdashboard/quiz/take");
       } else {

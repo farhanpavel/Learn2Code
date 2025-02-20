@@ -56,15 +56,22 @@ import { PiUploadSimpleBold } from "react-icons/pi";
 import { Label } from "@/components/ui/label";
 import { useAppContext } from "@/components/tableContext/page";
 import { FaLightbulb } from "react-icons/fa";
-
+import Cookies from "js-cookie";
 export default function Page() {
   const { bookData, setbookData } = useAppContext();
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
+    const accessToken = Cookies.get("AccessToken");
+
     const fetchData = async () => {
-      const response = await fetch(`${url}/api/question/data`);
+      const response = await fetch(`${url}/api/question/data`, {
+        method: "GET",
+        headers: {
+          Authorization: accessToken || "",
+        },
+      });
       const json = await response.json();
       if (response.ok) {
         setbookData(json);

@@ -33,7 +33,7 @@ export type Book = {
 };
 
 export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
-  const user_id = "123";
+  const accessToken = Cookies.get("AccessToken");
   const { setbookData, bookData } = useAppContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -42,9 +42,13 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `${url}/api/question/data/${user_id}/${user.Booktopic}`,
+        `${url}/api/question/data/${user.Booktopic}`,
         {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: accessToken || "",
+          },
         }
       );
 
@@ -77,7 +81,7 @@ export const ActionsCell: React.FC<{ user: Book }> = ({ user }) => {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
-              router.push(`/userdashboard/quiz/${user_id}/${user.Booktopic}`);
+              router.push(`/userdashboard/quiz/${user.Booktopic}`);
             }}
             className="hover:bg-green-400 rounded-lg hover:transition-all hover:delay-100 text-xs text-[#4a4a4a]"
           >

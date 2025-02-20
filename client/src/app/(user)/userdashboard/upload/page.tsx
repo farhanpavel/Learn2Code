@@ -55,8 +55,10 @@ import { ImUpload } from "react-icons/im";
 import { PiUploadSimpleBold } from "react-icons/pi";
 import { Label } from "@/components/ui/label";
 import { useAppContext } from "@/components/tableContext/page";
-
+import Cookies from "js-cookie";
 export default function Page() {
+  const refreshToken = Cookies.get("refreshToken");
+
   const { bookData, setbookData } = useAppContext();
   const [isLoading, setLoading] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -82,8 +84,15 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
     if (!file) {
       alert("Please select a file before uploading.");
+      return;
+    }
+
+    const accessToken = Cookies.get("AccessToken"); // Get token from cookies
+    if (!accessToken) {
+      alert("You are not authenticated!");
       return;
     }
 
@@ -93,8 +102,12 @@ export default function Page() {
       formData.append("Booktype", book.Booktype);
       formData.append("Booktopic", book.Booktopic);
       formData.append("status", book.status);
+
       const response = await fetch(`${url}/api/upload`, {
         method: "POST",
+        headers: {
+          Authorization: accessToken,
+        },
         body: formData,
       });
 
@@ -107,16 +120,25 @@ export default function Page() {
         console.log(uploadedBookData);
         setbookData([...bookData, uploadedBookData.data]);
         alert("Upload successful!");
-        setIsDialogOpen(false); // <-- Close the dialog on successful upload
+        setIsDialogOpen(false); // Close the dialog on success
       }
     } catch (err) {
       console.error("Upload error", err);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
+    const accessToken = Cookies.get("AccessToken");
+
     const fetchData = async () => {
-      const response = await fetch(`${url}/api/pdfs`);
+      const response = await fetch(`${url}/api/pdfs`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: accessToken || "",
+        },
+      });
       const json = await response.json();
       if (response.ok) {
         setbookData(json);

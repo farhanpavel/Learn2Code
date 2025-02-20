@@ -9,7 +9,8 @@ const router = express.Router();
 
 const pdfGet = async (req, res) => {
   try {
-    const pdfs = await Pdf.find();
+    const userId = req.user.id;
+    const pdfs = await Pdf.find({ userId });
     res.json(pdfs);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -60,6 +61,7 @@ const pdfPost = async (req, res) => {
       Booktype: req.body.Booktype,
       Booktopic: req.body.Booktopic,
       status: req.body.status,
+      userId: req.user.id,
     });
 
     await newPdf.save();

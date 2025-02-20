@@ -1,8 +1,48 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { url } from "@/components/Url/page";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
+  const router = useRouter();
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmpassword: "",
+  });
+  const { password, confirmpassword } = user;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (password == confirmpassword) {
+      try {
+        const response = await fetch(`${url}/api/auth/register`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(user),
+        });
+        if (!response.ok) {
+          alert("Failed to register the user");
+          throw new Error("Failed to submit data");
+        } else {
+          alert("SuccessFull");
+          router.push("/signin");
+        }
+      } catch (err) {
+        console.log("error", err);
+      }
+    } else {
+      alert("Password Doesnot Match");
+    }
+  };
+
   return (
     <div className="container mx-auto">
       <div className="min-h-screen flex items-center justify-center">
@@ -21,30 +61,38 @@ export default function Signup() {
               <p>Please Signup To Your Account</p>
             </div>
             <div className="2xl:w-3/4 w-full">
-              <form className="flex flex-col gap-y-2">
-                <input
+              <form className="flex flex-col gap-y-2" onSubmit={handleSubmit}>
+                <Input
                   type="text"
+                  id="name"
                   name="name"
                   className="border-[1px] border-gray-300 p-2 text-[#10343c] rounded-[5px] bg-[#F0F4F4]"
                   placeholder="Name"
+                  onChange={handleChange}
                 />
-                <input
+                <Input
                   type="email"
+                  id="email"
                   name="email"
                   className="border-[1px] border-gray-300 p-2 text-[#10343c] rounded-[5px] bg-[#F0F4F4]"
                   placeholder="Email"
+                  onChange={handleChange}
                 />
-                <input
+                <Input
                   type="password"
+                  id="password"
                   name="password"
                   className="border-[1px] border-gray-300 p-2 text-[#10343c] rounded-[5px] bg-[#F0F4F4]"
                   placeholder="Password"
+                  onChange={handleChange}
                 />
-                <input
+                <Input
                   type="password"
+                  id="confirmpassword"
                   name="confirmpassword"
                   className="border-[1px] border-gray-300 p-2 text-[#10343c] rounded-[5px] bg-[#F0F4F4]"
                   placeholder="Confirm Password"
+                  onChange={handleChange}
                 />
 
                 <div className="space-x-3">

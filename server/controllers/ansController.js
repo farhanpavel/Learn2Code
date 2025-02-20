@@ -11,24 +11,26 @@ const getAns = async (req, res) => {
   res.status(200).json(Data);
 };
 const postAns = async (req, res) => {
-  const answersArray = req.body;
+  const user_id = req.user.id;
+  let answersArray = req.body; // Use let to allow modifications
 
   try {
-    // // Ensure the answers are formatted as an array with the desired fields
-    // const answersArray = Object.keys(answers).map((id) => ({
-    //   id, // The question ID
-    //   answer: answers[id] || "I do not know", // Default to "I do not know" if no answer is provided
-    //   user_id, // The user ID
-    //   title, // The title
-    // }));
+    // Ensure answersArray is an array
+    if (!Array.isArray(answersArray)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid data format" });
+    }
 
-    // Insert the formatted answers into the database
-    const Data = await Ans.insertMany(answersArray);
+    const updatedAnswers = answersArray.map((answer) => ({
+      ...answer,
+      user_id,
+    }));
 
-    // Respond with the saved data
+    const Data = await Ans.insertMany(updatedAnswers);
+
     res.status(200).json({ success: true, data: Data });
   } catch (error) {
-    // Handle errors and send a proper response
     res
       .status(500)
       .json({ success: false, message: "Error saving answers", error });

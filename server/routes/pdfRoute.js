@@ -6,12 +6,13 @@ const {
   pdfGetByid,
   pdfDelete,
 } = require("../controllers/pdfController");
+const { jwtAuthentication } = require("../middlewares/authMiddleware");
 
 const pdfRoutes = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
-pdfRoutes.get("/pdfs", pdfGet);
+pdfRoutes.get("/pdfs", jwtAuthentication, pdfGet);
 pdfRoutes.delete("/pdfs/:id", pdfDelete);
 pdfRoutes.get("/pdfs/:id", pdfGetByid);
-pdfRoutes.post("/upload", upload.single("pdfFile"), pdfPost);
+pdfRoutes.post("/upload", jwtAuthentication, upload.single("pdfFile"), pdfPost);
 
 module.exports = pdfRoutes;

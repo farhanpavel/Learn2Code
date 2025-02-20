@@ -47,8 +47,6 @@ export default function Page() {
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const title = Cookies.get("title") || "";
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const user_id = "123";
   const handleStartStop = () => {
     if (isRunning) {
       if (intervalRef.current) {
@@ -86,9 +84,17 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
+    const accessToken = Cookies.get("AccessToken");
     const fetchData = async () => {
       const response = await fetch(
-        `${url}/api/data/question-generate/${user_id}/${title}`
+        `${url}/api/data/question-generate/${title}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: accessToken || "",
+          },
+        }
       );
       const json = await response.json();
       if (response.ok) {
@@ -116,27 +122,27 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
+    const accessToken = Cookies.get("AccessToken");
     const allAnswers = dataAll.map((item) => ({
       id: item._id,
       answer: answers[item._id] || "I do not know",
       title: title,
-      user_id: user_id,
     }));
 
     try {
       const response1 = await fetch(`${url}/api/ans`, {
         method: "POST",
         headers: {
+          Authorization: accessToken || "",
           "Content-Type": "application/json",
         },
         body: JSON.stringify(allAnswers),
       });
 
-      const response2 = await fetch(`${url}/api/result/${user_id}/${title}`, {
+      const response2 = await fetch(`${url}/api/result/${title}`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: accessToken || "",
         },
       });
 

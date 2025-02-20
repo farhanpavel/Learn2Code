@@ -23,13 +23,19 @@ export default function Page() {
   const [points, setPoints] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true); // Add loading state
   const title = Cookies.get("title");
-  const user_id = "123";
-  const API_URL = `${url}/api/question/data/${user_id}/${title}`;
+  const accessToken = Cookies.get("AccessToken");
+  const API_URL = `${url}/api/question/data/${title}`;
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_URL, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: accessToken || "",
+          },
+        });
         const data: QuizResult[] = await response.json();
         setQuizResults(data);
         updatePoints(data);
