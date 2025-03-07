@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import {
   Card,
   CardContent,
@@ -8,7 +10,50 @@ import {
 } from "@/components/ui/card";
 import PieData from "@/components/PieChart/page";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
-export default function page() {
+import { url } from "@/components/Url/page";
+
+export default function Dashboard() {
+  const [quizCount, setQuizCount] = useState(0);
+  const [pdfCount, setPdfCount] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = Cookies.get("AccessToken") || "";
+
+      try {
+        // Fetch quiz data
+        const quizResponse = await fetch(`${url}/api/question/data`, {
+          method: "GET",
+          headers: {
+            Authorization: token,
+          },
+        });
+        if (!quizResponse.ok) {
+          throw new Error("Failed to fetch quiz data");
+        }
+        const quizData = await quizResponse.json();
+        setQuizCount(quizData.length); // Assuming the response is an array of quizzes
+
+        // Fetch PDF data
+        const pdfResponse = await fetch(`${url}/api/pdfs`, {
+          method: "GET",
+          headers: {
+            Authorization: token,
+          },
+        });
+        if (!pdfResponse.ok) {
+          throw new Error("Failed to fetch PDF data");
+        }
+        const pdfData = await pdfResponse.json();
+        setPdfCount(pdfData.length); // Assuming the response is an array of PDFs
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div>
       <div className="flex flex-1 flex-col space-y-2 p-10">
@@ -26,7 +71,7 @@ export default function page() {
               <IoIosCheckmarkCircleOutline />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">110</div>
+              <div className="text-2xl font-bold">{quizCount}</div>
               <p className="text-xs text-muted-foreground">
                 +20% from last month
               </p>
@@ -85,8 +130,8 @@ export default function page() {
               </p>
             </CardContent>
           </Card>
-          <Card className="bg-white w-1/4">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Card className="bg-black w-1/4">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 text-white">
               <CardTitle className="text-sm font-medium">
                 Documents Uploaded
               </CardTitle>
@@ -98,14 +143,14 @@ export default function page() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
-                className="h-4 w-4 text-muted-foreground"
+                className="h-4 w-4 text-muted-foreground text-white"
               >
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
               </svg>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">15</div>
-              <p className="text-xs text-muted-foreground">
+            <CardContent className="text-white">
+              <div className="text-2xl font-bold">{pdfCount}</div>
+              <p className="text-xs text-muted-foreground text-white">
                 +2 since last month
               </p>
             </CardContent>

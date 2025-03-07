@@ -13,18 +13,13 @@ import {
   Mic,
   LogOut,
 } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import { useEffect, useState } from "react"; // Import useEffect and useState
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+
 type NavItem = {
   title: string;
   href: string;
@@ -33,7 +28,7 @@ type NavItem = {
   disabled?: boolean;
 };
 
-const navItems: NavItem[] = [
+const defaultNavItems: NavItem[] = [
   {
     title: "Overview",
     href: "/userdashboard/overview",
@@ -45,7 +40,7 @@ const navItems: NavItem[] = [
     icon: <Upload size={20} />,
   },
   {
-    title: "Study",
+    title: "Study", // This will be updated dynamically
     href: "/userdashboard/study",
     icon: <BookOpen size={20} />,
   },
@@ -54,7 +49,11 @@ const navItems: NavItem[] = [
     href: "/userdashboard/planner",
     icon: <RefreshCw size={20} />,
   },
-  { title: "Quiz", href: "/userdashboard/quiz", icon: <Lightbulb size={20} /> },
+  {
+    title: "Quiz",
+    href: "/userdashboard/quiz",
+    icon: <Lightbulb size={20} />,
+  },
   {
     title: "Interview",
     href: "/userdashboard/interview",
@@ -65,17 +64,38 @@ const navItems: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [tripPlanId, setTripPlanId] = useState("");
-  const handleClick = () => {
+  const [navItems, setNavItems] = useState<NavItem[]>(defaultNavItems);
+
+  useEffect(() => {
+    // Get the 'videodata' cookie
+    const videoData = Cookies.get("videodata");
+
+    // Update the "Study" link dynamically if videoData exists
+    if (videoData) {
+      setNavItems((prevItems) =>
+        prevItems.map((item) =>
+          item.title === "Study"
+            ? {
+                ...item,
+                href: `/userdashboard/study/watch${
+                  videoData.startsWith("?") ? videoData : `?${videoData}`
+                }`,
+              }
+            : item
+        )
+      );
+    }
+
+    // Parse query parameters from the URL
+    const queryParams = new URLSearchParams(window.location.search);
+    setTripPlanId(queryParams.get("tripPlanId") || "");
+  }, []);
+
+  const handleLogout = () => {
     Cookies.remove("AccessToken");
     Cookies.remove("RefreshToken");
     Cookies.remove("title");
   };
-  useEffect(() => {
-    // Parse query parameters from the URL
-    const queryParams = new URLSearchParams(window.location.search);
-    const tripPlanId = queryParams.get("tripPlanId") || "";
-    setTripPlanId(tripPlanId);
-  }, []);
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -96,7 +116,7 @@ export default function Sidebar() {
                 const href = item.disabled
                   ? "/"
                   : `${item.href}${
-                      tripPlanId ? `?tripPlanId=${tripPlanId}` : ""
+                      tripPlanId ? `&tripPlanId=${tripPlanId}` : ""
                     }`;
                 const isActive = pathname.startsWith(item.href);
 
@@ -122,7 +142,7 @@ export default function Sidebar() {
               <Button
                 variant="ghost"
                 className="w-full justify-start"
-                onClick={handleClick}
+                onClick={handleLogout}
               >
                 <LogOut size={20} className="mr-2" />
                 Logout

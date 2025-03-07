@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { EyeIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import Cookies from "js-cookie";
 interface VideoCardProps {
   video: any;
   className?: string;
@@ -14,6 +14,18 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, className }) => {
 
   const handleWatchVideo = () => {
     router.push(
+      `study/watch?videoId=${video.videoId}&title=${encodeURIComponent(
+        video.title
+      )}&description=${encodeURIComponent(
+        video.descriptionSnippet
+      )}&channelName=${encodeURIComponent(
+        video.author.title
+      )}&channelAvatar=${encodeURIComponent(
+        video.author.avatar[0].url
+      )}&views=${encodeURIComponent(video.stats.views)}`
+    );
+    Cookies.set(
+      "videodata",
       `study/watch?videoId=${video.videoId}&title=${encodeURIComponent(
         video.title
       )}&description=${encodeURIComponent(
