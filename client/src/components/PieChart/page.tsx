@@ -27,23 +27,23 @@ const chartConfig = {
     label: "Visitors",
   },
   chrome: {
-    label: "Chrome",
+    label: "Watchtime",
     color: "hsl(var(--chart-1))",
   },
   safari: {
-    label: "Safari",
+    label: "Quiz",
     color: "hsl(var(--chart-2))",
   },
   firefox: {
-    label: "Firefox",
+    label: "Interview",
     color: "hsl(var(--chart-3))",
   },
   edge: {
-    label: "Edge",
+    label: "Docs",
     color: "hsl(var(--chart-4))",
   },
   other: {
-    label: "Other",
+    label: "Planning",
     color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig;
@@ -52,7 +52,7 @@ export default function PieData() {
     <div>
       <Card className="flex flex-col">
         <CardHeader className="items-center pb-0">
-          <CardTitle>Pie Chart - Legend</CardTitle>
+          <CardTitle>Learning Progress</CardTitle>
           <CardDescription>January - June 2024</CardDescription>
         </CardHeader>
         <CardContent className="flex-1 pb-0">

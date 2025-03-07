@@ -21,21 +21,21 @@ export default function page() {
           <Card className="bg-white w-1/4">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Total Quizzes
+                Total Quizzes Taken
               </CardTitle>
               <IoIosCheckmarkCircleOutline />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">$45,231.89</div>
+              <div className="text-2xl font-bold">110</div>
               <p className="text-xs text-muted-foreground">
-                +20.1% from last month
+                +20% from last month
               </p>
             </CardContent>
           </Card>
           <Card className="bg-white w-1/4">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Subscriptions
+                Mock Interviews Given
               </CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -53,15 +53,17 @@ export default function page() {
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+2350</div>
+              <div className="text-2xl font-bold">7</div>
               <p className="text-xs text-muted-foreground">
-                +180.1% from last month
+                +18% from last month
               </p>
             </CardContent>
           </Card>
           <Card className="bg-white w-1/4">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Sales</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Videos Watched
+              </CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -77,7 +79,7 @@ export default function page() {
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+12,234</div>
+              <div className="text-2xl font-bold">50 Hours</div>
               <p className="text-xs text-muted-foreground">
                 +19% from last month
               </p>
@@ -85,7 +87,9 @@ export default function page() {
           </Card>
           <Card className="bg-white w-1/4">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Now</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Documents Uploaded
+              </CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -100,9 +104,9 @@ export default function page() {
               </svg>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">+573</div>
+              <div className="text-2xl font-bold">15</div>
               <p className="text-xs text-muted-foreground">
-                +201 since last hour
+                +2 since last month
               </p>
             </CardContent>
           </Card>
