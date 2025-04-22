@@ -20,7 +20,7 @@ const generateInterviewQuestions = async (
   summary,
   difficulty
 ) => {
-  const inputPrompt = `Generate 5 interview questions for the job titled "${jobTitle}". The job description is: "${description}". The candidate's summary is: "${summary}". The difficulty level is: "${difficulty}". Please ask the questions directly using the candidate's name, without any additional text or explanation.`;
+  const inputPrompt = `Generate 5 interview questions for the job titled "${jobTitle}". The job description is: "${description}". The candidate's summary is: "${summary}". The difficulty level is: "${difficulty}". Please ask the questions directly without any additional text or explanation.`;
 
   try {
     const response = await model.generateContent(inputPrompt);

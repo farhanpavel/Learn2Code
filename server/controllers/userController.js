@@ -35,18 +35,25 @@ const userRegister = async (req, res) => {
 
 const userLogin = async (req, res) => {
   const { email, password } = req.body;
-  const data = await User.findOne({ email });
-  if (!data) {
-    return res.status(404).json("user Doesnot Exist");
-  }
-  const isMatch = await bcrypt.compare(password, data.password);
-  if (!isMatch) {
-    res.status(404).json("Password Not Match");
-  }
-  const token = generateToken(data);
-  res.status(200).json(token);
-};
 
+  try {
+    const data = await User.findOne({ email });
+    if (!data) {
+      return res.status(404).json("User Does Not Exist");
+    }
+
+    const isMatch = await bcrypt.compare(password, data.password);
+    if (!isMatch) {
+      return res.status(404).json("Password Not Match");
+    }
+
+    const token = generateToken(data);
+    return res.status(200).json(token);
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).json("Internal Server Error");
+  }
+};
 const RefreshToken = async (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) {
@@ -68,5 +75,4 @@ const RefreshToken = async (req, res) => {
 module.exports = {
   userLogin,
   userRegister,
-  RefreshToken,
 };

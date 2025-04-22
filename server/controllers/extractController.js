@@ -36,16 +36,17 @@ const extractData = async (req, res) => {
   }
 
   try {
-    const response = await fetch(pdfUrl);
-    if (!response.ok) {
-      throw new Error("Failed to fetch PDF");
+    console.log("Extracting text using PDF.co API...");
+    const extractedText = await extractWithPDFCo(pdfUrl);
+
+    if (!extractedText || extractedText.trim().length === 0) {
+      throw new Error("No text could be extracted from the PDF");
     }
 
-    const buffer = await response.arrayBuffer();
-    const pdfData = await pdfParse(Buffer.from(buffer));
+    console.log("Text extracted successfully, generating summary...");
+    const summary = await getSummaryFromAI(extractedText);
 
-    const summary = await getSummaryFromAI(pdfData.text);
-
+    console.log("Updating database...");
     const updatedStore = await Store.findOneAndReplace(
       {},
       { description: summary },
@@ -55,13 +56,58 @@ const extractData = async (req, res) => {
     return res.status(200).json({
       message: "PDF summary extracted and stored",
       summary,
-      updatedStore, // Optionally return the updated store document
+      updatedStore,
     });
   } catch (error) {
     console.error("Error processing PDF:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({
+      error: error.message || "Internal Server Error",
+      details: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    });
   }
 };
+
+// PDF.co API integration
+async function extractWithPDFCo(pdfUrl) {
+  const API_KEY = process.env.OCR_API_KEY;
+  const API_ENDPOINT = "https://api.pdf.co/v1/pdf/convert/to/text";
+
+  try {
+    console.log("Sending PDF to PDF.co API...");
+    const response = await fetch(API_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY,
+      },
+      body: JSON.stringify({
+        url: pdfUrl,
+        language: "eng", // Set to English for text recognition
+        async: false, // Synchronous processing
+
+        inline: true, // Return text directly
+      }),
+    });
+
+    const result = await response.json();
+
+    // Log the full API response for debugging
+    console.log("PDF.co API Response:", JSON.stringify(result, null, 2));
+
+    if (result.error) {
+      throw new Error(result.message || "PDF.co API error");
+    }
+
+    if (!result.body || result.body.trim().length === 0) {
+      throw new Error("PDF.co returned empty text");
+    }
+
+    return result.body;
+  } catch (error) {
+    console.error("PDF.co API Error:", error);
+    throw new Error(`PDF.co processing failed: ${error.message}`);
+  }
+}
 
 const getQuestionFromAI = async (text) => {
   const inputPrompt = `Based on the following passage, generate some theoretical questions:
