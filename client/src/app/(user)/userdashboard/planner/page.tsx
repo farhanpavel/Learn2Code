@@ -1,263 +1,248 @@
 "use client";
 
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Loader2,
+  BookOpen,
+  GraduationCap,
+  Trophy,
+  Target,
+  ArrowRight,
+  CheckCircle2,
+  Sparkles,
+} from "lucide-react";
 import { url } from "@/components/Url/page";
-import { toast } from "@/hooks/use-toast";
-import { Clock, Loader2, Play, Sparkles } from "lucide-react";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { GoProjectRoadmap } from "react-icons/go";
-interface ReferenceLink {
-  type: "video" | "documentation"; // Define possible types
-  embed_url?: string; // Only for videos
-  url?: string; // Only for documentation
-  title: string;
-}
-interface Step {
-  step: string;
-  difficulty: "Beginner" | "Intermediate" | "Advanced"; // Define possible difficulties
-  reference_links?: ReferenceLink[];
-  time: string;
-}
-interface Result {
-  title: string;
-  description: string;
-  level: string; // Assuming level exists in the payload
-  steps: Step[];
-}
-interface Root {
-  result: Result;
-}
-interface Plan {
-  result: {
-    title: string;
-    description: string;
-    steps: Step[];
-  };
-}
+
+const FEATURED_TOPICS = [
+  {
+    title: "Web Development",
+    image: "https://images.pexels.com/photos/270404/pexels-photo-270404.jpeg",
+    description: "Master modern web technologies and frameworks",
+  },
+  {
+    title: "Data Science",
+    image: "https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg",
+    description: "Learn statistics, machine learning, and data analysis",
+  },
+  {
+    title: "Digital Marketing",
+    image: "https://images.pexels.com/photos/905163/pexels-photo-905163.jpeg",
+    description: "Explore SEO, social media, and content marketing",
+  },
+];
+
 const PlannerPage = () => {
-  const [query, setquery] = useState<string>("");
-  const [level, setlevel] = useState<string>("");
-  const [loading, setloading] = useState<boolean>(false);
-  const [plan, setplan] = useState<Root | null>(null);
-  const [allPlanners, setallPlanners] = useState<Result[]>([]);
+  const [query, setQuery] = useState<string>("");
+  const [titles, setTitles] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
-  const generatePlan = async () => {
-    setloading(true);
+  const generatePlan = async (topic: string = query) => {
+    if (!topic.trim()) return;
+
+    setLoading(true);
     try {
       const res = await fetch(`${url}/api/planner`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ query, level }),
+        body: JSON.stringify({ query: topic }),
       });
-      const data = await res.json();
-      console.log(data);
-      setplan(data);
-    } catch (err) {
-      console.error("Error fetching plan:", err);
-    }
-    setloading(false);
-  };
-
-  const fetchAllPlanners = async () => {
-    setloading(true);
-    try {
-      const res = await fetch(`${url}/api/planner`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch planners");
-      }
 
       const data = await res.json();
-      setallPlanners(data);
+      setTitles(data.titles || []);
+      setSelectedTopic(topic);
     } catch (err) {
-      console.error("Error fetching planners:", err);
+      console.error("Error fetching titles:", err);
     }
-    setloading(false);
+    setLoading(false);
   };
-
-  const createPlanner = async (payload: Result) => {
-    const newPlannerData = {
-      title: payload.title,
-      description: payload.description,
-      level: level,
-      steps: payload.steps.map((step) => ({
-        step: step.step,
-        difficulty: step.difficulty,
-        time: step.time,
-        reference_links: step.reference_links,
-      })),
-    };
-
-    setloading(true);
-    try {
-      const res = await fetch(`${url}/api/planner/create`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newPlannerData),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to create planner");
-      }
-
-      const data = await res.json();
-      console.log(data);
-      toast({
-        title: "Planner created successfully",
-        description: "Your planner has been created successfully",
-      });
-      fetchAllPlanners();
-      setplan(null);
-      setquery("");
-    } catch (err) {
-      console.error("Error creating planner:", err);
-    }
-    setloading(false);
-  };
-
-  useEffect(() => {
-    fetchAllPlanners();
-  }, []);
 
   return (
-    <div className="p-9 space-y-2">
-      <div className="flex gap-x-2 items-center text-black">
-        <GoProjectRoadmap className="text-3xl" />
-        <h1 className="text-2xl font-bold">Roadmap</h1>
+    <div className="min-h-screen bg-[#fafafa]">
+      {/* Hero Section */}
+      <div className="bg-black text-white py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center"
+          >
+            <GraduationCap className="w-16 h-16 mx-auto mb-6" />
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Your Learning Journey Starts Here
+            </h1>
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+              Generate personalized learning roadmaps powered by AI to master
+              any skill or topic
+            </p>
+          </motion.div>
+        </div>
       </div>
-      <p className="text-xs text-[#4a4a4a] border-black  border-b-[2px] pb-4">
-        Create a perfect roadmap for your learning
-      </p>
-      <div className="py-10 space-y-2 border-[1px] rounded-lg p-8 border-gray-300">
-        <h1 className="font-semibold text-black text-2xl">
-          Create Your Learning Path
-        </h1>
-        <p className="text-[#4a4a4a] text-xs">What do you want to learn?</p>
-        <div className="space-y-4 mt-5">
-          <Input
-            type="text"
-            value={query}
-            onChange={(e) => setquery(e.target.value)}
-            className="bg-white w-1/2 border-black focus:ring-black"
-          />
-          <div className="flex items-center space-x-2">
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Search Section */}
+        <Card className="p-8 shadow-lg border-2 border-black/10 bg-white mb-12">
+          <div className="flex flex-col md:flex-row gap-4">
+            <Input
+              type="text"
+              placeholder="What do you want to learn?"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="flex-1 text-lg border-2 border-black/20 focus-visible:ring-black"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !loading && query.trim()) {
+                  generatePlan();
+                }
+              }}
+            />
             <Button
-              disabled={loading}
-              onClick={generatePlan}
-              className="bg-black hover:bg-gray-600 w-1/2"
+              onClick={() => generatePlan()}
+              disabled={loading || !query.trim()}
+              className="bg-black hover:bg-gray-800 text-white text-lg py-6"
             >
               {loading ? (
-                <Loader2 className="animate-spin mr-1" size={17} />
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Generating...
+                </>
               ) : (
-                <Sparkles className="mr-1" size={17} />
+                <>
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  Generate Roadmap
+                </>
               )}
-              Generate
             </Button>
           </div>
-        </div>
+        </Card>
 
-        {plan?.result && plan?.result?.steps?.length > 0 && (
-          <div className=" w-full max-w-3xl">
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold mt-5">{plan.result.title}</p>
+        {/* Featured Topics */}
+        {!titles.length && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mb-16"
+          >
+            <h2 className="text-2xl font-bold mb-8">Popular Learning Paths</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {FEATURED_TOPICS.map((topic, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card
+                    className="overflow-hidden cursor-pointer transition-transform hover:scale-105"
+                    onClick={() => generatePlan(topic.title)}
+                  >
+                    <img
+                      src={topic.image}
+                      alt={topic.title}
+                      className="w-full h-48 object-cover"
+                    />
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold mb-2">
+                        {topic.title}
+                      </h3>
+                      <p className="text-gray-600 mb-4">{topic.description}</p>
+                      <Button
+                        variant="outline"
+                        className="w-full border-2 border-black hover:bg-black hover:text-white"
+                      >
+                        Generate Path
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Roadmap Results */}
+        {titles.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-12"
+          >
+            <div className="flex items-center gap-3 mb-8">
+              <Target className="h-8 w-8" />
+              <h2 className="text-2xl font-bold">
+                Learning Path: {selectedTopic}
+              </h2>
             </div>
 
-            <p className="text-xs  text-gray-500 mt-2 mb-5">
-              {plan.result.description}
-            </p>
-            <Accordion type="single" collapsible>
-              {plan.result.steps.map((item: Step, index: number) => (
-                <AccordionItem
-                  value={`item-${index}`}
-                  key={index}
-                  className="border-0"
-                >
-                  <AccordionTrigger className="flex justify-end items-center p-0 ">
-                    <div className="h-[60px] flex items-center relative">
-                      <p className="flex items-center z-20 justify-center h-[30px] mr-3 font-semibold text-xl w-[30px] rounded-full bg-black text-white p-5">
-                        {index + 1}
-                      </p>
-                      <div className="absolute top-0 left-[20px] h-full bottom-0 w-[3px] bg-gray-600"></div>
-                    </div>
-                    <p className="text-sm mr-2 flex-1">{item.step}</p>
-                    <div className="flex items-center mx-2">
-                      <Badge
-                        className={
-                          item.difficulty === "Beginner"
-                            ? "bg-green-500"
-                            : item.difficulty === "Intermediate"
-                            ? "bg-yellow-600"
-                            : "bg-red-500"
-                        }
-                      >
-                        {item.difficulty}
-                      </Badge>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    {item.reference_links?.map((link, i) =>
-                      link.type === "video" ? (
-                        <iframe
-                          key={i}
-                          width="688"
-                          height="387"
-                          src={link.embed_url}
-                          title={link.title}
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          referrerPolicy="strict-origin-when-cross-origin"
-                          className="my-2 w-full"
-                          allowFullScreen
-                        ></iframe>
-                      ) : (
-                        <div key={i} className="my-3">
-                          <a
-                            href={link.url}
-                            target="_blank"
-                            className="text-xs w-[400px]"
-                            rel="noreferrer"
-                          >
-                            <Badge className="bg-black text-white">
-                              Documentation
-                            </Badge>{" "}
-                            {link.title}{" "}
-                            <span className="underline italic text-blue-500">
-                              ({link.url})
-                            </span>
-                          </a>
+            <div className="grid gap-4">
+              <AnimatePresence>
+                {titles.map((title, index) => {
+                  const cleanTitle = title.replace(/^title:\s*/, "");
+                  const slug = cleanTitle.toLowerCase().replace(/\s+/g, "-"); // slugify
+                  const router = useRouter();
+
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      onClick={() =>
+                        router.push(
+                          `/userdashboard/planner/${slug}?title=${encodeURIComponent(
+                            cleanTitle
+                          )}`
+                        )
+                      }
+                      className="cursor-pointer"
+                    >
+                      <Card className="p-6 border-2 border-black/10 hover:border-black/30 transition-colors">
+                        <div className="flex items-center gap-4">
+                          <div className="flex-shrink-0 w-12 h-12 bg-black text-white rounded-full flex items-center justify-center font-bold text-xl">
+                            {index + 1}
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold">
+                              {cleanTitle}
+                            </h3>
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mt-2">
+                              <BookOpen className="h-4 w-4" />
+                              <span>Essential Step</span>
+                              <CheckCircle2 className="h-4 w-4 ml-2" />
+                            </div>
+                          </div>
                         </div>
-                      )
-                    )}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+
+              {titles.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: titles.length * 0.1 }}
+                  className="flex items-center justify-center mt-8"
+                >
+                  <div className="flex items-center gap-3 text-gray-600">
+                    <Trophy className="h-6 w-6" />
+                    <span className="text-lg">
+                      Complete these steps to master {selectedTopic}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
         )}
       </div>
     </div>
