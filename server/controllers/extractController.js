@@ -16,7 +16,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // Function to generate summary from AI
 const getSummaryFromAI = async (text) => {
-  const inputPrompt = `Summarize the following text in a concise manner:
+  const inputPrompt = `Summarize the following text contain all the major topics:
   ${text}`;
 
   try {
@@ -148,11 +148,11 @@ const questionData = async (req, res) => {
       throw new Error("Failed to fetch PDF");
     }
     await Pdf.updateOne({ Booktopic: title }, { $set: { status: "1" } });
-    const buffer = await response.arrayBuffer();
-    const pdfData = await pdfParse(Buffer.from(buffer));
+    // const buffer = await response.arrayBuffer();
+    // const pdfData = await pdfParse(Buffer.from(buffer));
 
-    const summary = await getSummaryFromAI(pdfData.text);
-    const questionData = await getQuestionFromAI(summary);
+    const summary = await Store.findOne();
+    const questionData = await getQuestionFromAI(summary.description);
 
     if (!Array.isArray(questionData) || questionData.length === 0) {
       throw new Error("Invalid format: Expected an array of questions");

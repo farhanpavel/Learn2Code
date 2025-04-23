@@ -96,7 +96,6 @@ Please provide:
 1. A simple explanation
 2. Key points to remember
 3. Any important context
-
 `;
 
     console.log("Final Input Prompt:\n", inputPrompt);
@@ -118,5 +117,181 @@ Please provide:
     });
   }
 };
+// data
 
-module.exports = { getPdfAnalysis };
+const getYoutubeVideos = async (title) => {
+  try {
+    const url = `https://youtube138.p.rapidapi.com/search/?q=${encodeURIComponent(
+      title
+    )}%20tutorial&hl=en&gl=US`;
+
+    const options = {
+      method: "GET",
+      headers: {
+        "x-rapidapi-key": process.env.RAPID_API_KEY,
+        "x-rapidapi-host": "youtube138.p.rapidapi.com",
+      },
+    };
+
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`YouTube API error: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    const firstVideo = result.contents?.find((item) => item.type === "video");
+
+    if (!firstVideo?.video?.videoId) {
+      return null;
+    }
+
+    return `https://www.youtube.com/watch?v=${firstVideo.video.videoId}`;
+  } catch (error) {
+    console.error("Error fetching YouTube video:", error);
+    return null;
+  }
+};
+
+// Controller to stream resources
+const streamLearningResources = async (req, res) => {
+  try {
+    const { title } = req.query;
+
+    if (!title) {
+      res.status(400).json({ error: "Title is required" });
+      return;
+    }
+
+    // Set SSE headers
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+
+    // Helper to send SSE events with valid JSON
+    const sendEvent = (type, data) => {
+      if (!data || (data.chunk && !data.chunk.trim())) {
+        console.log(`Skipping empty ${type} event`);
+        return; // Skip empty or invalid data
+      }
+      const jsonData = JSON.stringify(data);
+      console.log(`Sending ${type} event:`, jsonData);
+      res.write(`event: ${type}\n`);
+      res.write(`data: ${jsonData}\n\n`);
+    };
+
+    // Send YouTube URL first
+    const youtubeUrl = await getYoutubeVideos(title);
+    sendEvent("youtube", { url: youtubeUrl || "" });
+
+    // Gemini prompt for description, code, and documentation
+    const comprehensivePrompt = `Provide detailed learning resources about "${title}" in this exact format:
+
+# DESCRIPTION
+[Provide a comprehensive 3-4 paragraph explanation covering:
+1. Key concepts and fundamentals
+2. Practical applications
+3. Important considerations or limitations]
+
+# CODE EXAMPLES
+[Provide exactly 3 practical code examples in this format:
+\`\`\`language (e.g., python, javascript)
+// Example 1: [Brief title]
+[Actual code snippet]
+\`\`\`
+[1-2 sentence explanation of what this demonstrates]
+
+\`\`\`language
+// Example 2: [Brief title]
+[Actual code snippet]
+\`\`\`
+[Explanation]
+
+\`\`\`language
+// Example 3: [Brief title]
+[Actual code snippet]
+\`\`\`
+[Explanation]]
+
+# DOCUMENTATION
+[Provide 3-5 official documentation links in this format:
+- [Title](URL): [Brief description]
+- [Title](URL): [Brief description]]
+
+IMPORTANT:
+- Use triple backticks (\`\`\`) for code blocks, specifying the language
+- Ensure clear section headings (# DESCRIPTION, # CODE EXAMPLES, # DOCUMENTATION)
+- Code examples must be valid, practical, and relevant to "${title}"
+- Documentation links must be from official sources (e.g., pandas.pydata.org for Pandas)
+- Do not skip any section`;
+
+    // Stream Gemini response
+    let buffer = "";
+    let currentSection = null;
+
+    const result = await model.generateContentStream({
+      contents: [{ role: "user", parts: [{ text: comprehensivePrompt }] }],
+    });
+
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      if (!chunkText?.trim()) {
+        console.log("Skipping empty Gemini chunk");
+        continue; // Skip empty chunks
+      }
+
+      console.log("Raw Gemini chunk:", chunkText); // Debug raw chunk
+      buffer += chunkText;
+
+      // Process section markers
+      const sectionMarkers = {
+        "# DESCRIPTION": "description",
+        "# CODE EXAMPLES": "code",
+        "# DOCUMENTATION": "docs",
+      };
+
+      for (const [marker, section] of Object.entries(sectionMarkers)) {
+        if (buffer.includes(marker) && currentSection !== section) {
+          // Send remaining content from previous section
+          if (currentSection) {
+            const content = buffer.split(marker)[0].trim();
+            if (content) {
+              sendEvent(currentSection, { chunk: content });
+            }
+          }
+          buffer = buffer.split(marker)[1] || "";
+          currentSection = section;
+        }
+      }
+
+      // Send current section content if enough data is buffered
+      if (currentSection && buffer.trim()) {
+        const lines = buffer.split("\n");
+        const lastLine = lines[lines.length - 1];
+        // Only send if the last line is complete or a paragraph
+        if (lastLine === "" || lines.length > 1 || buffer.includes("\n\n")) {
+          const content = buffer.trim();
+          if (content) {
+            sendEvent(currentSection, { chunk: content });
+            buffer = ""; // Clear buffer after sending
+          }
+        }
+      }
+    }
+
+    // Flush remaining buffer
+    if (currentSection && buffer.trim()) {
+      sendEvent(currentSection, { chunk: buffer.trim() });
+    }
+
+    // Send completion event
+    sendEvent("complete", { status: "done" });
+
+    res.end();
+  } catch (error) {
+    console.error("Error streaming resources:", error);
+    sendEvent("error", { error: error.message });
+    res.end();
+  }
+};
+module.exports = { getPdfAnalysis, streamLearningResources };

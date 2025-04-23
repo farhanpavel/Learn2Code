@@ -19,7 +19,7 @@ export default function Home() {
       <div className="p-1 mt-5">
         <Feature />
       </div>
-      <div className="bg-black p-3 mt-5">
+      <div>
         <Contact />
       </div>
       <div>

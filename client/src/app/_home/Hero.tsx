@@ -7,7 +7,12 @@ export default function Hero() {
     <div>
       <div className="flex items-center justify-center mt-[5%] flex-col">
         <div className="text-center text-5xl font-bold w-3/4 leading-[4.2rem]">
-          <h1>Revolutionizing Coding Education with Advanced AI Solutions</h1>
+          <h1>
+            <span className="bg-gradient-to-r from-[#10343c] to-[#2a9d8f] bg-clip-text text-transparent">
+              Revolutionizing
+            </span>{" "}
+            Coding Education with Advanced AI Solutions
+          </h1>
         </div>
         <div className="text-lg  text-[#4a4a4a] mt-4 ">
           <p>

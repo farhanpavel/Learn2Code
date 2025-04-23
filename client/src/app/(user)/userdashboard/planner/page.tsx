@@ -199,7 +199,7 @@ const PlannerPage = () => {
                         router.push(
                           `/userdashboard/planner/${slug}?title=${encodeURIComponent(
                             cleanTitle
-                          )}`
+                          )}&subtitle=${encodeURIComponent(query)}`
                         )
                       }
                       className="cursor-pointer"

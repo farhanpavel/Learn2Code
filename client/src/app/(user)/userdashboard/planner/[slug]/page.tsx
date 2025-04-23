@@ -12,6 +12,7 @@ export default function Page() {
   const slug = params.slug;
   const searchParams = useSearchParams();
   const title = searchParams.get("title");
+  const subtitle = searchParams.get("subtitle");
 
   const [resources, setResources] = useState({
     youtubeUrl: "",
@@ -100,9 +101,11 @@ export default function Page() {
 
   useEffect(() => {
     if (!title) return;
-
+    const data = [searchParams.get("title"), searchParams.get("subtitle")]
+      .filter(Boolean) // Removes null/undefined
+      .join(" ");
     const eventSource = new EventSource(
-      `${url}/api/resources/stream?title=${encodeURIComponent(title)}`
+      `${url}/api/resources/stream?title=${encodeURIComponent(data)}`
     );
 
     eventSource.onopen = () => {
@@ -261,7 +264,7 @@ export default function Page() {
   const youtubeVideoId = resources.youtubeUrl?.match(/v=([^&]+)/)?.[1] || "";
 
   return (
-    <div className="p-10 overflow-hidden">
+    <div className="p-5 overflow-hidden">
       <div>
         <h1 className="text-3xl font-bold">Roadmap: {title}</h1>
 
@@ -312,32 +315,41 @@ export default function Page() {
           <h2 className="text-2xl font-semibold mb-4">Code Examples</h2>
           <div className="bg-white p-6 rounded-lg shadow">
             {resources.codeExamples ? (
-              <ReactMarkdown
-                rehypePlugins={[rehypeHighlight]}
-                components={{
-                  pre({ node, className, children, ...props }) {
-                    return (
-                      <pre
-                        className={`${className} bg-gray-100 p-4 rounded overflow-x-auto text-sm`}
-                        {...props}
-                      >
-                        {children}
-                      </pre>
-                    );
-                  },
-                  code({ node, inline, className, children, ...props }) {
-                    return (
-                      <code className={`${className} font-mono`} {...props}>
-                        {children}
-                      </code>
-                    );
-                  },
-                }}
-              >
-                {`\`\`\`${resources.language || "python"}\n${
-                  resources.codeExamples
-                }\n\`\`\``}
-              </ReactMarkdown>
+              <div className="relative">
+                <ReactMarkdown
+                  rehypePlugins={[rehypeHighlight]}
+                  components={{
+                    pre({ node, className, children, ...props }) {
+                      return (
+                        <pre
+                          className={`${className} bg-gray-100 p-4 rounded-lg text-sm w-full overflow-x-auto max-w-[calc(100vw-3rem)]`} // ← Critical change
+                          style={{
+                            wordBreak: "break-word", // Break long strings
+                            whiteSpace: "pre-wrap", // Allow wrapping
+                          }}
+                          {...props}
+                        >
+                          {children}
+                        </pre>
+                      );
+                    },
+                    code({ node, inline, className, children, ...props }) {
+                      return (
+                        <code
+                          className={`${className} font-mono break-words`} // ← Force word breaks
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
+                  {`\`\`\`${resources.language || "python"}\n${
+                    resources.codeExamples
+                  }\n\`\`\``}
+                </ReactMarkdown>
+              </div>
             ) : (
               <div className="h-32 bg-gray-200 rounded animate-pulse"></div>
             )}

@@ -1,3 +1,4 @@
+import Chatbot from "@/components/Chatbot/Chatbot";
 import Sidebar from "@/components/Sidebar/page";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -11,6 +12,7 @@ export default function Landing({
       <Sidebar />
       <div className="w-[90%]">{children}</div>
       <Toaster />
+      <Chatbot />
     </div>
   );
 }

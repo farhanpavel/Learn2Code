@@ -13,23 +13,18 @@ const getGeneratedPlan = async (req, res) => {
     if (!query) {
       return res
         .status(400)
-        .json({ error: "Please enter a valid query and level to get a plan." });
+        .json({ error: "Please enter a valid query to get a plan." });
     }
 
-    // Adjusted prompt to include embedded YouTube videos
-    const inputPrompt = `Give me a roadmap for ${query} at the  level in 14 days. 
-    Return a JSON object with:
-    - title: The title of the entire roadmap.
-    - description: A brief description of the roadmap.
-    - steps: An array of steps for each day (total 14 objects in the array) objects containing:
-      - step: A specific learning step.
-      - time: The estimated time to complete the step in days (for absolute beginners).
-      - difficulty: The difficulty level (Beginner, Intermediate, Advanced).
-      - reference_links: An array of objects containing:
-        - title: The title of the reference.
-        - url: The URL of the reference.
-        - type: Either "documentation" or "video".
-        - embed_url: If it's a video, return the embeddable YouTube URL in the format "https://www.youtube.com/embed/VIDEO_ID".
+    const inputPrompt = `Create a  learning roadmap based  ${query}. 
+    Return ONLY a JSON array with  titles where take the day from this string '${query}' (one for each day) in this format:
+    [
+      "title: [Title 1]",
+      "title: [Title 2]",
+      ...
+      "title: [Title..]"
+    ]
+    Each title should be concise (max 10 words) and describe the main focus for that day but donot mention the day and day number just title:data.
     Respond with JSON only, no explanations or markdown formatting.`;
 
     const response = await model.generateContent(inputPrompt);
@@ -41,159 +36,181 @@ const getGeneratedPlan = async (req, res) => {
     responseText = responseText.replace(/```json|```/g, "").trim();
 
     // Attempt to parse the JSON response
-    let jsonResponse;
+    let titlesArray;
     try {
-      jsonResponse = JSON.parse(responseText);
+      titlesArray = JSON.parse(responseText);
 
-      // Ensure the response structure is correct
-      if (!jsonResponse.steps || !Array.isArray(jsonResponse.steps)) {
-        throw new Error("Invalid JSON structure: 'steps' array is missing.");
-      }
+      // Validate the response is an array with exactly 14 items
 
-      // Convert YouTube links to embeddable format
-      jsonResponse.steps.forEach((step) => {
-        if (step.reference_links && Array.isArray(step.reference_links)) {
-          step.reference_links.forEach((link) => {
-            if (
-              link.type === "video" &&
-              link.url.includes("youtube.com/watch?v=")
-            ) {
-              const videoId = link.url.split("v=")[1].split("&")[0]; // Extract YouTube video ID
-              link.embed_url = `https://www.youtube.com/embed/${videoId}`;
-            }
-          });
-        }
-      });
+      // if (titlesArray.length !== 14) {
+      //   throw new Error("Response should contain exactly 14 day titles");
+      // }
     } catch (parseError) {
       console.error("Error parsing JSON:", parseError);
-      return res.status(500).json({ error: "Failed to parse AI response." });
+      return res.status(500).json({
+        error: "Failed to parse AI response.",
+        details: parseError.message,
+      });
     }
 
-    res.status(200).json({ result: jsonResponse });
+    res.status(200).json({ titles: titlesArray });
   } catch (error) {
     console.error("Error generating response from AI:", error);
-    res.status(500).json({ error: "Failed to generate response from AI." });
+    res.status(500).json({
+      error: "Failed to generate response from AI.",
+      details: error.message,
+    });
   }
 };
 
-// 📌 Create a New Planner
+// Create a New Planner with Titles
 const createPlanner = async (req, res) => {
   try {
-    const { title, description, level, steps } = req.body;
+    const { title, dayTitles } = req.body; // dayTitles is the array of 14 titles
 
-    // Check if the level is provided
-    if (!level) {
-      return res
-        .status(400)
-        .json({ error: "Level is required to create a planner" });
-    }
+    // Convert day titles array to steps format
+    const steps = dayTitles.map((dayTitle, index) => ({
+      step: dayTitle,
+      dayNumber: index + 1,
+      status: "Not Started",
+    }));
 
     const newPlanner = new Planner({
       title,
-      description,
-      level, // Make sure this is coming from the request body
       steps,
     });
 
     await newPlanner.save();
-    res
-      .status(201)
-      .json({ message: "Planner created successfully!", planner: newPlanner });
+    res.status(201).json({
+      message: "Planner created successfully!",
+      planner: newPlanner,
+    });
   } catch (error) {
     console.error("Error creating planner:", error);
-    res.status(500).json({ error: "Failed to create planner." });
+    res.status(500).json({
+      error: "Failed to create planner.",
+      details: error.message,
+    });
   }
 };
 
-// 📌 Get All Planners
+// Get All Planners
 const getAllPlanners = async (req, res) => {
   try {
-    const planners = await Planner.find();
+    const planners = await Planner.find().select(
+      "title steps.dayNumber steps.step"
+    );
     res.status(200).json(planners);
   } catch (error) {
     console.error("Error fetching planners:", error);
-    res.status(500).json({ error: "Failed to retrieve planners." });
+    res.status(500).json({
+      error: "Failed to retrieve planners.",
+      details: error.message,
+    });
   }
 };
 
-// 📌 Get a Single Planner by ID
+// Get a Single Planner by ID
 const getPlannerById = async (req, res) => {
   try {
     const { id } = req.params;
     const planner = await Planner.findById(id);
 
-    if (!planner) return res.status(404).json({ error: "Planner not found!" });
+    if (!planner) {
+      return res.status(404).json({ error: "Planner not found!" });
+    }
 
     res.status(200).json(planner);
   } catch (error) {
     console.error("Error fetching planner:", error);
-    res.status(500).json({ error: "Failed to retrieve planner." });
+    res.status(500).json({
+      error: "Failed to retrieve planner.",
+      details: error.message,
+    });
   }
 };
 
-// 📌 Start a Step (Update Status & Dates)
-const startStep = async (req, res) => {
+// Start a Day (Update Status & Dates)
+const startDay = async (req, res) => {
   try {
-    const { plannerId, stepId } = req.params;
+    const { plannerId, dayNumber } = req.params;
 
     const planner = await Planner.findOneAndUpdate(
-      { _id: plannerId, "steps._id": stepId },
+      { _id: plannerId, "steps.dayNumber": parseInt(dayNumber) },
       {
         $set: {
           "steps.$.status": "In Progress",
           "steps.$.startDate": new Date(),
           "steps.$.endDate": new Date(
-            new Date().setDate(new Date().getDate() + 7)
-          ), // Default 7 days
+            new Date().setDate(new Date().getDate() + 1)
+          ),
         },
       },
       { new: true }
     );
 
-    if (!planner)
-      return res.status(404).json({ error: "Planner or step not found!" });
+    if (!planner) {
+      return res.status(404).json({ error: "Planner or day not found!" });
+    }
 
-    res.status(200).json({ message: "Step started successfully!", planner });
+    res.status(200).json({
+      message: "Day started successfully!",
+      planner,
+    });
   } catch (error) {
-    console.error("Error starting step:", error);
-    res.status(500).json({ error: "Failed to start step." });
+    console.error("Error starting day:", error);
+    res.status(500).json({
+      error: "Failed to start day.",
+      details: error.message,
+    });
   }
 };
 
-// 📌 Mark a Step as Completed
-const completeStep = async (req, res) => {
+// Mark a Day as Completed
+const completeDay = async (req, res) => {
   try {
-    const { plannerId, stepId } = req.params;
+    const { plannerId, dayNumber } = req.params;
 
     const planner = await Planner.findOneAndUpdate(
-      { _id: plannerId, "steps._id": stepId },
+      { _id: plannerId, "steps.dayNumber": parseInt(dayNumber) },
       { $set: { "steps.$.status": "Completed" } },
       { new: true }
     );
 
-    if (!planner)
-      return res.status(404).json({ error: "Planner or step not found!" });
+    if (!planner) {
+      return res.status(404).json({ error: "Planner or day not found!" });
+    }
 
-    res.status(200).json({ message: "Step completed successfully!", planner });
+    res.status(200).json({
+      message: "Day completed successfully!",
+      planner,
+    });
   } catch (error) {
-    console.error("Error completing step:", error);
-    res.status(500).json({ error: "Failed to complete step." });
+    console.error("Error completing day:", error);
+    res.status(500).json({
+      error: "Failed to complete day.",
+      details: error.message,
+    });
   }
 };
 
-// 📌 Delete a Planner
+// Delete a Planner
 const deletePlanner = async (req, res) => {
   try {
     const { id } = req.params;
-
     const planner = await Planner.findByIdAndDelete(id);
 
-    if (!planner) return res.status(404).json({ error: "Planner not found!" });
+    if (!planner) {
+      return res.status(404).json({ error: "Planner not found!" });
+    }
 
     res.status(200).json({ message: "Planner deleted successfully!" });
   } catch (error) {
     console.error("Error deleting planner:", error);
-    res.status(500).json({ error: "Failed to delete planner." });
+    res.status(500).json({
+      error: "Failed to delete planner.",
+      details: error.message,
+    });
   }
 };
 
@@ -202,7 +219,7 @@ module.exports = {
   createPlanner,
   getAllPlanners,
   getPlannerById,
-  startStep,
-  completeStep,
+  startDay,
+  completeDay,
   deletePlanner,
 };

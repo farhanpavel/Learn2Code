@@ -3,7 +3,13 @@ import React, { useState } from "react";
 import { VscGitPullRequestNewChanges } from "react-icons/vsc";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import {
+  Loader2,
+  Upload,
+  FileText,
+  BriefcaseIcon,
+  ScrollText,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -25,8 +31,28 @@ import { Label } from "@/components/ui/label";
 import { FaTeamspeak } from "react-icons/fa";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUploader } from "@/components/ui/file-uploader";
-import { toast } from "sonner"; // Assuming you're using Sonner for toast notifications
+import { toast } from "sonner";
 import { url } from "@/components/Url/page";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+
+const difficultyConfig = {
+  fundamental: {
+    title: "Fundamental Interview",
+    description: "Basic concepts and entry-level questions",
+    color: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  },
+  standard: {
+    title: "Standard Interview",
+    description: "Intermediate concepts and practical scenarios",
+    color: "bg-blue-100 text-blue-800 border-blue-200",
+  },
+  classic: {
+    title: "Classic Interview",
+    description: "Advanced concepts and complex problem-solving",
+    color: "bg-purple-100 text-purple-800 border-purple-200",
+  },
+};
 
 const DetailsPage = ({ params }: { params: { id: string } }) => {
   const { id } = params;
@@ -34,9 +60,11 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [open, setOpen] = React.useState(false);
   const router = useRouter();
 
-  const [open, setOpen] = React.useState(false);
+  const difficulty = difficultyConfig[id as keyof typeof difficultyConfig];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -49,22 +77,20 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
 
     try {
       const formData = new FormData();
-      formData.append("file", files[0]); // Ensure the file is appended correctly
+      formData.append("file", files[0]);
       formData.append("jobTitle", jobTitle);
       formData.append("description", jobDescription);
       formData.append("difficulty", id);
+
       const response = await fetch(`${url}/api/data-extract`, {
         method: "POST",
-        body: formData, // Send form data
+        body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to process data.");
-      }
+      if (!response.ok) throw new Error("Failed to process data.");
 
-      const result = await response.json();
-      alert("Resume uploaded and processed successfully!");
-      router.push("/interview"); // Redirect to dashboard or another page
+      toast.success("Resume uploaded and processed successfully!");
+      router.push("/interview");
     } catch (error) {
       console.error("Error:", error);
       toast.error("An error occurred. Please try again.");
@@ -72,109 +98,138 @@ const DetailsPage = ({ params }: { params: { id: string } }) => {
       setIsSubmitting(false);
     }
   };
-  return (
-    <div>
-      <div className="p-9 space-y-2">
-        <div className="flex gap-x-2 items-center text-black">
-          <FaTeamspeak className="text-3xl" />
-          <h1 className="text-2xl font-bold">Start Interview</h1>
-        </div>
-        <p className="text-xs text-[#4a4a4a] border-black  border-b-[2px] pb-4">
-          Create a new interview here!
-        </p>
-        <div>
-          <Card className="border-[1px] border-gray-300 bg-[#F0F4F4]">
-            <div className="flex justify-between">
-              <CardHeader className="space-y-4">
-                <CardTitle>Interview Details</CardTitle>
-                <div>
-                  <h1 className="font-semibold text-sm">Enter Informations</h1>
-                </div>
-              </CardHeader>
-            </div>
 
-            <CardContent>
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="p-3 rounded-full bg-primary/10">
+            <FaTeamspeak className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {difficulty.title}
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400">
+              {difficulty.description}
+            </p>
+          </div>
+        </div>
+
+        <Card className="shadow-lg border-0">
+          <CardHeader className="space-y-1 pb-8 border-b">
+            <div className="flex items-center justify-between">
               <div>
-                <Dialog open={open} onOpenChange={setOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="text-xs mb-4 border-gray-500"
-                    >
-                      Upload Resume {files.length > 0 && `(${files.length})`}
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-xl">
-                    <DialogHeader>
-                      <DialogTitle>Upload files</DialogTitle>
-                      <DialogDescription>
-                        Drag and drop your files here or click to browse.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <FileUploader
-                      maxFileCount={1} // Only allow one file for resume
-                      maxSize={8 * 1024 * 1024} // 8MB limit
-                      onValueChange={(uploadedFiles) => {
-                        setFiles(uploadedFiles);
-                        if (uploadedFiles.length > 0) {
-                          setOpen(false); // Close dialog after upload
-                        }
-                      }}
-                    />
-                  </DialogContent>
-                </Dialog>
+                <CardTitle className="text-xl">Interview Setup</CardTitle>
+                <CardDescription>
+                  Provide your details to begin the interview process
+                </CardDescription>
               </div>
-              <form onSubmit={handleSubmit}>
-                <div className="grid w-full items-center gap-4">
-                  <div className="flex flex-col space-y-5 ">
-                    <div className="space-y-5 ">
-                      <div className="space-y-2 ">
-                        <Label className="text-xs w-" htmlFor="jobTitle">
-                          Job Role
-                        </Label>
-                        <Input
-                          id="jobTitle"
-                          type="text"
-                          className="w-1/3 border-[1px] bg-white border-black focus:ring-black"
-                          value={jobTitle}
-                          onChange={(e) => setJobTitle(e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2 ">
-                        <Label className="text-xs w-" htmlFor="jobDescription">
-                          Job Description
-                        </Label>
-                        <Textarea
-                          id="jobDescription"
-                          rows={7}
-                          className="w-3/4 border-[1px] bg-white resize-none border-black focus:ring-black"
-                          value={jobDescription}
-                          onChange={(e) => setJobDescription(e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
+              <Badge className={`${difficulty.color} px-3 py-1`}>
+                {id.charAt(0).toUpperCase() + id.slice(1)}
+              </Badge>
+            </div>
+          </CardHeader>
+
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium" htmlFor="resume">
+                    Resume
+                  </Label>
+                  <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full mt-1.5 h-20 border-dashed"
+                      >
+                        <div className="flex flex-col items-center gap-1">
+                          <Upload className="w-5 h-5 text-gray-400" />
+                          <span className="text-sm font-medium">
+                            {files.length
+                              ? `Selected (${files.length})`
+                              : "Upload Resume"}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            PDF or DOC up to 8MB
+                          </span>
+                        </div>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-xl">
+                      <DialogHeader>
+                        <DialogTitle>Upload Resume</DialogTitle>
+                        <DialogDescription>
+                          Choose your resume file to upload
+                        </DialogDescription>
+                      </DialogHeader>
+                      <FileUploader
+                        maxFileCount={1}
+                        maxSize={8 * 1024 * 1024}
+                        onValueChange={(files) => {
+                          setFiles(files);
+                          if (files.length > 0) setOpen(false);
+                        }}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium" htmlFor="jobTitle">
+                    Job Role
+                  </Label>
+                  <div className="relative mt-1.5">
+                    <BriefcaseIcon className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      id="jobTitle"
+                      className="pl-10"
+                      placeholder="e.g. Senior Software Engineer"
+                      value={jobTitle}
+                      onChange={(e) => setJobTitle(e.target.value)}
+                      required
+                    />
                   </div>
                 </div>
-                <CardFooter className="flex justify-end mt-12">
-                  <Button
-                    type="submit"
-                    className="bg-black text-white text-xs hover:bg-gray-500 hover:transition-all hover:delay-100"
-                    disabled={isSubmitting}
+
+                <div>
+                  <Label
+                    className="text-sm font-medium"
+                    htmlFor="jobDescription"
                   >
-                    {isSubmitting ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
-                    {isSubmitting ? "Submitting..." : "Submit"}
-                  </Button>
-                </CardFooter>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
+                    Job Description
+                  </Label>
+                  <div className="relative mt-1.5">
+                    <ScrollText className="w-5 h-5 absolute left-3 top-3 text-gray-400" />
+                    <Textarea
+                      id="jobDescription"
+                      className="pl-10 min-h-[150px]"
+                      placeholder="Paste the job description here..."
+                      value={jobDescription}
+                      onChange={(e) => setJobDescription(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Start Interview"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 };
+
 export default DetailsPage;

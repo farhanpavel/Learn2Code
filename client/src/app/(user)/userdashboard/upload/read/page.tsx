@@ -152,7 +152,7 @@ export default function Page() {
   const [summaryResult, setSummaryResult] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
   const [toast, setToast] = useState<string | null>(null);
-
+  const [expanded, setExpanded] = useState(false);
   useEffect(() => {
     const bookId = Cookies.get("Id");
     if (bookId) {
@@ -333,7 +333,21 @@ export default function Page() {
         {summaryResult && (
           <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
             <h3 className="font-medium text-gray-900 mb-2">Analysis Results</h3>
-            <p className="text-gray-700 whitespace-pre-wrap">{summaryResult}</p>
+            <p
+              className={`text-gray-700 whitespace-pre-wrap ${
+                !expanded && summaryResult.length > 150 ? "line-clamp-3" : ""
+              }`}
+            >
+              {summaryResult}
+            </p>
+            {summaryResult.length > 150 && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="mt-2 text-sm text-blue-600 hover:text-blue-800 focus:outline-none"
+              >
+                {expanded ? "See Less" : "See More"}
+              </button>
+            )}
           </div>
         )}
       </div>

@@ -111,7 +111,7 @@ export default function Sidebar() {
             />
           </div>
           <ScrollArea className="flex-1 px-2">
-            <div className="space-y-2 py-4">
+            <div className="flex flex-col gap-y-1 py-4">
               {navItems.map((item, index) => {
                 const href = item.disabled
                   ? "/"
