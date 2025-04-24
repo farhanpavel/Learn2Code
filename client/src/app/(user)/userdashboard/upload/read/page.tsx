@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { Worker, Viewer, SpecialZoomLevel } from "@react-pdf-viewer/core";
 import "@react-pdf-viewer/core/lib/styles/index.css";
+import { zoomPlugin } from "@react-pdf-viewer/zoom"; // Import zoom plugin
+import "@react-pdf-viewer/zoom/lib/styles/index.css"; // Import zoom plugin styles
 import * as pdfjsLib from "pdfjs-dist";
 import html2canvas from "html2canvas";
 import {
@@ -36,6 +38,15 @@ const PdfViewer = ({
     y2: 0,
   });
   const [isDragging, setIsDragging] = useState(false);
+
+  // Initialize zoom plugin
+  const zoomPluginInstance = zoomPlugin();
+  const { Zoom } = zoomPluginInstance;
+
+  // Synchronize scale with zoom plugin
+  useEffect(() => {
+    zoomPluginInstance.zoomTo(scale);
+  }, [scale, zoomPluginInstance]);
 
   useEffect(() => {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
@@ -123,7 +134,7 @@ const PdfViewer = ({
         <Viewer
           fileUrl={pdfUrl}
           defaultScale={SpecialZoomLevel.PageFit}
-          scale={scale}
+          plugins={[zoomPluginInstance]} // Add zoom plugin
         />
       </Worker>
 
@@ -153,6 +164,7 @@ export default function Page() {
   const [scale, setScale] = useState(1);
   const [toast, setToast] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+
   useEffect(() => {
     const bookId = Cookies.get("Id");
     if (bookId) {

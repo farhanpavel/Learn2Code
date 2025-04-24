@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants, Transition } from "framer-motion";
 import { GiMoebiusStar } from "react-icons/gi";
 import { WiDirectionUpRight } from "react-icons/wi";
 import { RiBox1Line } from "react-icons/ri";
@@ -8,7 +8,7 @@ import { FaScrewdriver } from "react-icons/fa";
 import { GoShieldCheck } from "react-icons/go";
 import { TbMessageCircleQuestion } from "react-icons/tb";
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
@@ -17,7 +17,7 @@ const cardVariants = {
   },
 };
 
-const iconVariants = {
+const iconVariants: Variants = {
   hover: {
     scale: 1.2,
     rotate: 360,
@@ -25,11 +25,15 @@ const iconVariants = {
   },
 };
 
-const arrowVariants = {
+const arrowVariants: Variants = {
   hover: {
     x: 5,
     y: -5,
-    transition: { repeat: Infinity, repeatType: "reverse", duration: 1 },
+    transition: {
+      repeat: Infinity,
+      repeatType: "reverse" as const, // Explicitly type as "reverse"
+      duration: 1,
+    },
   },
 };
 

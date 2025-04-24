@@ -7,6 +7,13 @@ import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github.css";
 import Link from "next/link";
+
+interface CodeExampleSectionProps {
+  resources: {
+    codeExamples?: string;
+    language?: string;
+  };
+}
 export default function Page() {
   const params = useParams();
   const slug = params.slug;
@@ -21,8 +28,15 @@ export default function Page() {
     documentationLinks: "",
     loading: true,
     error: null as string | null,
+    language: "",
   });
-
+  interface CodeProps {
+    node?: any; // You can refine this type if needed
+    inline?: boolean;
+    className?: string;
+    children?: React.ReactNode;
+    [key: string]: any; // For other props
+  }
   // Refs to manage the typing states for each stream
   const descriptionQueue = useRef<string[]>([]);
   const isTypingDescription = useRef(false);
@@ -130,7 +144,7 @@ export default function Page() {
         );
         setResources((prev) => ({
           ...prev,
-          error: `Failed to parse YouTube data: ${err.message}`,
+
           loading: false,
         }));
       }
@@ -158,7 +172,7 @@ export default function Page() {
         );
         setResources((prev) => ({
           ...prev,
-          error: `Failed to parse description: ${err.message}`,
+
           loading: false,
         }));
       }
@@ -183,7 +197,7 @@ export default function Page() {
         );
         setResources((prev) => ({
           ...prev,
-          error: `Failed to parse code examples: ${err.message}`,
+
           loading: false,
         }));
       }
@@ -208,7 +222,7 @@ export default function Page() {
         );
         setResources((prev) => ({
           ...prev,
-          error: `Failed to parse documentation: ${err.message}`,
+
           loading: false,
         }));
       }
@@ -220,7 +234,7 @@ export default function Page() {
       eventSource.close();
     });
 
-    eventSource.addEventListener("error", (event) => {
+    eventSource.addEventListener("error", (event: any) => {
       try {
         console.log("Raw error event data:", event.data);
         const data = JSON.parse(event.data);
@@ -238,7 +252,7 @@ export default function Page() {
         );
         setResources((prev) => ({
           ...prev,
-          error: `Failed to process stream: ${err.message}`,
+
           loading: false,
         }));
       }
@@ -322,10 +336,10 @@ export default function Page() {
                     pre({ node, className, children, ...props }) {
                       return (
                         <pre
-                          className={`${className} bg-gray-100 p-4 rounded-lg text-sm w-full overflow-x-auto max-w-[calc(100vw-3rem)]`} // ← Critical change
+                          className={`${className} bg-gray-100 p-4 rounded-lg text-sm w-full overflow-x-auto max-w-[calc(100vw-3rem)]`}
                           style={{
-                            wordBreak: "break-word", // Break long strings
-                            whiteSpace: "pre-wrap", // Allow wrapping
+                            wordBreak: "break-word",
+                            whiteSpace: "pre-wrap",
                           }}
                           {...props}
                         >
@@ -333,10 +347,23 @@ export default function Page() {
                         </pre>
                       );
                     },
-                    code({ node, inline, className, children, ...props }) {
-                      return (
+                    code({
+                      node,
+                      inline,
+                      className,
+                      children,
+                      ...props
+                    }: CodeProps) {
+                      return inline ? (
                         <code
-                          className={`${className} font-mono break-words`} // ← Force word breaks
+                          className={`${className || ""} font-mono break-words`}
+                          {...props}
+                        >
+                          {children}
+                        </code>
+                      ) : (
+                        <code
+                          className={`${className || ""} font-mono`}
                           {...props}
                         >
                           {children}
