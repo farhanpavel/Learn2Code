@@ -41,6 +41,7 @@ const PlannerPage = () => {
   const [titles, setTitles] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
+  const router = useRouter();
 
   const generatePlan = async (topic: string = query) => {
     if (!topic.trim()) return;
@@ -187,7 +188,6 @@ const PlannerPage = () => {
                 {titles.map((title, index) => {
                   const cleanTitle = title.replace(/^title:\s*/, "");
                   const slug = cleanTitle.toLowerCase().replace(/\s+/g, "-"); // slugify
-                  const router = useRouter();
 
                   return (
                     <motion.div

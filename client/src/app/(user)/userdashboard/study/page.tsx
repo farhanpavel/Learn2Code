@@ -69,7 +69,7 @@ export default function Page() {
     return (
       <div className="p-9">
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <ScaleLoader color="black" />
+          <ScaleLoader color="white" />
         </div>
       </div>
     );

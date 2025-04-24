@@ -31,8 +31,8 @@ export default function Contact() {
           </h1>
 
           <p className="text-gray-300 max-w-2xl mx-auto">
-            We're here to help and answer any questions you might have. We look
-            forward to hearing from you.
+            We&apos;re here to help and answer any questions you might have. We
+            look forward to hearing from you.
           </p>
         </div>
       </div>

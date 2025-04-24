@@ -147,7 +147,10 @@ const questionData = async (req, res) => {
     if (!response.ok) {
       throw new Error("Failed to fetch PDF");
     }
-    await Pdf.updateOne({ Booktopic: title }, { $set: { status: "1" } });
+    await Pdf.updateOne(
+      { userId: user_id, Booktopic: title },
+      { $set: { status: "1" } }
+    );
     // const buffer = await response.arrayBuffer();
     // const pdfData = await pdfParse(Buffer.from(buffer));
 

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { url } from "@/components/Url/page";
-
+import { signIn } from "next-auth/react";
 const Signin = () => {
   const router = useRouter();
   const [isValid, setIsValid] = useState(false);
@@ -58,8 +58,17 @@ const Signin = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    console.log("Google sign-in clicked");
-    // window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`;
+    try {
+      const result = await signIn("google", {
+        callbackUrl: "/userdashboard/overview",
+        redirect: true,
+      });
+
+      if (result?.error) {
+      }
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+    }
   };
 
   return (
