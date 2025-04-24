@@ -257,25 +257,25 @@ git clone https://github.com/farhanpavel/Learn2Code
 cd client
 ```
 
-4.  Install dependencies in the client folder
+3.  Install dependencies in the client folder
 
 ```
 npm install
 ```
 
-5.  Run the development server in the client folder
+4.  Run the development server in the client folder
 
 ```
 npm run dev
 ```
 
-6.  Build for production
+5.  Build for production
 
 ```
 npm run build
 ```
 
-7.  Watch it live on your browser in this URL
+6.  Watch it live on your browser in this URL
 
 ```
 http://localhost:3000
