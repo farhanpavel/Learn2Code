@@ -237,9 +237,9 @@ Learn2Code/
 
 ## 🛠️ Tech Stack
 
-- Frontend: HTML, TailwindCSS, JavaScript, TypeScript, React, Next.js
+- Frontend: React, Next.js, TailwindCSS,
 - Backend: Node.js, Express
-- Database: MongoDB, Mongoose, Prisma ORM
+- Database: MongoDB, Mongoose
 
 ## 🚦 Getting Started
 
