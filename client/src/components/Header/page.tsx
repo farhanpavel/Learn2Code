@@ -42,7 +42,7 @@ export default function Header() {
           </Link>
           <div className="grid gap-2 py-6">
             <Link
-              href="#benefits"
+              href="#benefit"
               className="flex w-full items-center py-2 text-lg font-semibold "
               prefetch={false}
             >
@@ -56,7 +56,7 @@ export default function Header() {
               Features
             </Link>
             <Link
-              href="#work"
+              href="#contact"
               className="flex w-full items-center py-2 text-lg font-semibold"
               prefetch={false}
             >
@@ -76,7 +76,7 @@ export default function Header() {
           <NavigationMenuList className="space-x-14  2xl:space-x-24 mt-2 flex justify-center items-center">
             <NavigationMenuLink asChild>
               <Link
-                href="#benefits"
+                href="#benefit"
                 className="group inline-flex h-9 w-max items-center justify-center   
              px-4 py-2 text-lg 2xl:text-2xl font-semibold transition-all 
              text-black hover:shadow-[0_4px_2px_-2px_rgba(16,52,60,0.6)]
@@ -102,7 +102,7 @@ export default function Header() {
             </NavigationMenuLink>
             <NavigationMenuLink asChild>
               <Link
-                href="#works"
+                href="#contact"
                 className="group inline-flex h-9 w-max items-center justify-center   
              px-4 py-2 text-lg 2xl:text-2xl font-semibold transition-all 
              text-black hover:shadow-[0_4px_2px_-2px_rgba(16,52,60,0.6)]
@@ -110,7 +110,7 @@ export default function Header() {
              duration-300"
                 prefetch={false}
               >
-                How it Works
+                Contact
               </Link>
             </NavigationMenuLink>
           </NavigationMenuList>

@@ -16,7 +16,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-6 sm:flex sm:flex-wrap sm:justify-center sm:flex-row">
-          <ul className="sm:flex text-center gap-x-6 text-[#4A4A4A] font-rubik text-sm md:text-base">
+          <ul className="sm:flex text-center gap-x-6 text-[#4A4A4A] font-rubik text-sm md:text-base space-y-2 sm:space-y-0">
             <li className="hover:text-green-900 cursor-pointer hover:transition-colors hover:delay-150">
               Contact
             </li>
@@ -43,7 +43,7 @@ export default function Footer() {
               </div>
 
               <div>
-                <ul className="sm:flex sm:flex-wrap text-center gap-x-7">
+                <ul className="sm:flex sm:flex-wrap text-center gap-x-7 space-y-2 sm:space-y-0">
                   <li className="hover:text-green-900 cursor-pointer hover:transition-colors hover:delay-150">
                     Contact
                   </li>

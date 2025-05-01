@@ -112,7 +112,7 @@ export default function Benefits() {
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
     >
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-4" id="benefit">
         <motion.h1
           className="text-center font-semibold text-white text-xl border-b-[3px] uppercase"
           initial={{ opacity: 0, y: -20 }}

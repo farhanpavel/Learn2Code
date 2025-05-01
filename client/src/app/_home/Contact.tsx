@@ -11,7 +11,7 @@ import {
 
 export default function Contact() {
   return (
-    <div className="min-h-screen bg-[#10343C]">
+    <div className="min-h-screen bg-[#10343C]" id="contact">
       {/* Header Section */}
       <div className="text-center py-16 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-20">
@@ -37,12 +37,9 @@ export default function Contact() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Left Column - Contact Info & Map */}
           <div className="lg:w-1/2 space-y-8">
-            {/* Contact Info Cards */}
             <div className="grid gap-6">
               <div className="bg-white/5 backdrop-blur-sm p-6 rounded-2xl transform hover:scale-105 transition-all duration-300">
                 <div className="flex items-center gap-4">
@@ -98,7 +95,6 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Right Column - Contact Form */}
           <div className="lg:w-1/2">
             <form className="bg-white/5 backdrop-blur-sm p-8 rounded-2xl space-y-6">
               <div className="relative">
